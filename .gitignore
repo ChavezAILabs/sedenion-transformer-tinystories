@@ -1,0 +1,20 @@
+# Local virtual environment
+zda-env/
+
+# Python bytecode
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Datasets (downloadable, not original content)
+data/
+
+# Local training run outputs (checkpoints/logs) — not needed for the
+# provenance/ordering claims git was added for; large binaries (ckpt.pt
+# files run several MB each) that would bloat history for no benefit
+runs/
+runs_*/
+zda_runs_ts/
+
+# Machine-local IDE/tool settings
+.claude/settings.local.json

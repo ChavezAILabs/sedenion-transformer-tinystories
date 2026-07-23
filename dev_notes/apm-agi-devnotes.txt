@@ -1,0 +1,25 @@
+APM-AGI
+-------------------------------
+APM for AGI development notes
+
+
+- On upgrade to Pro: same notebook, same cells, nothing changes — just pick the A100/L4 runtime and the remaining runs go ~6–8× faster.	
+
+--
+
+July 21, 2026
+
+Competition begins tonight Claude Code/Fable 5 versus Gemini.
+
+
+iknowpi- for galois IGP24
+
+chavezailabs - for APM4AGI
+
+
+Due to the nature of the inter-AI competition it is imperative that both platforms extend professional courtesy to one another. "C:\dev\projects\galois\docs\devnotes\igp_AIcompetitionmessages.txt" can be used as a messaging board between you two if scripts need to be re-written, but an overwrite could be catastrophic for the other team. You should check in with each other periodically as this is a friendly competition (with relegation).
+
+1:11 a.m.
+
+Both AI platforms are running, Fable 5 versus new Gemini 3.6.
+
