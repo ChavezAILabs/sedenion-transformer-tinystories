@@ -181,6 +181,30 @@ every S layer descending 8–100× (0.9–2.0 decades), so a 1.5-decade bar
 applied to all layers would fail on the weakest S layer by
 construction. All layers are reported; only L0 carries a bar.
 
+**Addendum 2026-07-24 — the baseline-asymmetry question raised against
+this statistic, checked and mostly resolved in D's favor.** A parallel
+session pointed out that D is a ratio (decades of descent from step-0),
+and if S starts far from its manifold while X starts adjacent to its
+own, X would show less descent purely from having less room to fall —
+making D's cross-variant comparison a baseline artifact rather than a
+mechanism finding. Checked directly against the real model
+(`phase4_init_r2_check.py`, real grid dims, fresh untrained inits): the
+model's actual q,k pairs at initialization do **not** resemble free
+samples of the raw sedenion sphere (where X's variety is ~493–497×
+*more* accessible than S's, confirmed on the real seeds via
+`phase4_X_variety_sigma_min.py`) — under the model's real
+parameterization, S and X both start "generic, far from any manifold"
+(S min 0.121–0.173, X min 0.044–0.092 across independent inits — both
+ranges bracket the real grid's own recorded step-0 values almost
+exactly, a strong cross-check). **The real step-0 gap (~2–3×) is far too
+small to explain the training-driven gap D measures (S descends
+99–117×, X 1.04–2.2×).** D's cross-variant comparison is not
+well-explained as a baseline artifact. Full reasoning in
+`PHASE4_session_close_2026-07-22.md` §3(e)'s addendum — read that before
+citing D in any writeup, since it also revises what any surviving claim
+should be attributed to (training's engagement with each manifold, not
+which manifold is more abstractly accessible).
+
 ## A1.5 γ sign census
 
 Session-close §3(e): γ never flipped sign across 72 head-slots in four
