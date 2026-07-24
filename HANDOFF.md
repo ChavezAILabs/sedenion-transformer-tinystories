@@ -444,6 +444,99 @@ same day, in a session that ran before this one and didn't yet know
 about the amendments. No action needed; noted here so the discrepancy
 doesn't cause confusion later.
 
+## 4b. I1–I4 executed 2026-07-23/24 (session ended on a "freeze and save" warning — see status flags below)
+
+Routing doc: `P4_AMENDMENTS_HANDOFF.md` §I1–I4 (superseded mid-session by
+a second doc, `SESSION_CONTINUATION_HANDOFF_2026-07-23.md`, dropped into
+the repo root by the parallel chat session — **read that file too**, it
+has independent context this section doesn't repeat, including the
+owner's decision to buy Colab units for seed 1339 rather than wait for
+free-tier reset).
+
+- **I1 (seed 1339 timing) — UNRESOLVED, blocking.** Claude Code cannot
+  check Colab billing history or Drive `p4_runs_ts/` mtimes from this
+  machine — no access to either. Per the routing doc's own rule ("take
+  the weaker label under any uncertainty"), **A1, A2, A3, and
+  A3-revised should all be treated as ordinary post-hoc analysis, not
+  presented as blind, until the owner confirms otherwise.** This is
+  the single most important open item for the next session to close
+  with the owner directly — a one-question ask, not investigation.
+- **I2 (git init) — DONE.** No git repo existed in this project before
+  this session. Initialized, `.gitignore` added (excludes `zda-env/`
+  venv [22k files], `data/`, `runs*/` [checkpoints], `.claude/settings.local.json`).
+  Initial commit `fe2e967` (2026-07-23 16:11:25 -0700, 63 files) covers
+  the repo state including the already-frozen/corrected A1/A2/A3 and
+  the merged §8.4. A second commit added `P4_AMENDMENT_A3_REVISED_layer0_dose_response.md`
+  and `phase4_shared_phase_autotopy_check.py` (hash TBD — see below,
+  commit may not have completed before session end; check `git log`
+  first thing next session).
+- **I3 (A3 reopened) — DONE.** Verified empirically (script run, not
+  just code read — `gamma[h]=0` gives *exactly* uniform, content-blind
+  attention for that head, zero deviation, other heads bit-identical).
+  This voids A3.1's original selection argument (it claimed γ=0 "leaves
+  content-based attention intact," which is false for K3 — no
+  dot-product term survives underneath, unlike Phase 1–3's β=0). The
+  intervention itself was still sound; only its justification was wrong.
+  **`P4_AMENDMENT_A3_REVISED_layer0_dose_response.md` frozen** —
+  supersedes (does not edit) the original A3: a γ-multiplier
+  dose-response sweep (m ∈ {0, 0.25, 0.5, 1.0, 2.0} on L0, both S and X,
+  both rungs, 3 seeds) plus a clamp-to-deep-layer-γ arm, replacing the
+  single binary ablation. One ambiguity in the proposed design (whether
+  the clamp arm's "deep-layer median" is per-head or pooled) resolved as
+  **pooled** (no evidence head identity is consistent across layers),
+  stated explicitly so it's fixed before, not after, execution. Harness
+  still not built — design freeze only, same division as the original.
+- **I4 (shared-phase null / autotopy check) — DONE, then partially
+  superseded in priority.** Prerequisite question answered by direct
+  code read (no computation needed): `shuffled_structure_tensor` draws
+  **15 mutually independent permutations** (one fresh `g.permutation(16)`
+  per k=1..15), not one consistent global relabeling — **X is an
+  arbitrary bilinear map, not an isomorphic copy of the sedenions in a
+  misaligned basis.** The parallel chat session reached the identical
+  conclusion independently (see `SESSION_CONTINUATION_HANDOFF_2026-07-23.md`
+  §3) and flagged its consequence as **higher priority than the
+  autotopy check**: if X has no accessible zero-divisor variety at all,
+  "X never reaches r²<1e-2" (session-close §3(e), used throughout this
+  session's other write-ups) may be vacuous rather than a real finding
+  about training — the S-vs-X positive result would need reframing from
+  "coherent algebra beats broken map" toward something closer to the
+  Phase 1–3 V1/V4 confound (weight-sharing/structure, not algebra).
+  **`phase4_shared_phase_autotopy_check.py` run and committed** — true
+  T16's induced autotopy defect vanishes strictly faster than X's as
+  the rotation angle shrinks (ratio grows from ~1.3–1.5× at the largest
+  frozen frequency to ~45–53× at the smallest, all 3 seeds) — a real,
+  quantified finding, but **the chat session's proposed follow-up (does
+  X have zero divisors at all — minimize ‖x⊗y‖² over unit x,y, report
+  the infimum) is more decisive and was started at session end
+  (`phase4_X_variety_characterization.py`, background run, result
+  status:** — **RESOLVED before session end, result is IN:** found
+  **true T16's infimum = 2.0e-8; X's infima = 3.7e-8 (1337), 1.2e-8
+  (1338), 2.5e-8 (1339)** — all at the same optimizer noise floor, no
+  meaningful separation. **X has its own accessible near-zero-divisor
+  region, comparable to the true tensor's.** This refutes the "X may be
+  vacuous" worry: "X never reaches r²<1e-2 during training"
+  (session-close §3(e)) is a real claim about what training did or
+  didn't find, not an artifact of X having nowhere to descend to.
+  **The S-vs-X positive result survives this check** — its
+  interpretation should be refined, not discarded: X has zero-divisor-
+  *like* structure somewhere in its space, just apparently not one
+  training discovers/exploits the way it does for the true tensor's
+  actual manifold — consistent with, and now better supported by, the
+  existing `phase4_X_positional_check.py` finding that R_8's positional
+  decoupling fails for X. **Not yet folded into
+  `PHASE4_session_close_2026-07-22.md` §3(e) or any amendment's prose**
+  — do that next session, flagged the same way the §3(d) correction was
+  (struck through, dated, reasoned), not silently.
+
+**Everything above is descriptive and NOT applied to the spec or any
+grading — completeness gate (no verdict language until 18/18) is
+untouched by any of this.** The X-variety question, if it comes back
+"bounded away from zero," would be a significant enough finding to need
+explicit owner attention before any further write-up leans on the S-vs-X
+framing as currently stated in `PHASE4_session_close_2026-07-22.md`
+§3(e) — flag it, don't quietly rewrite that section without a similar
+struck-through-and-flagged treatment to the §3(d) correction.
+
 ## 5. Loose threads — real, not forgotten, just not urgent
 
 - **Forward-citation traversal (`PRIOR_ART_REVIEW_zda.md` §7 item 3,
