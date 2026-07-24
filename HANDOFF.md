@@ -604,6 +604,55 @@ something Claude Code can resolve unilaterally.
 **I1 (seed 1339 timing) is still the top open item, unchanged by any of
 this thread.**
 
+## 4d. I1 RESOLVED 2026-07-24 — A1/A2/A3/A3-revised labeled POST-HOC, NOT BLIND (corrected)
+
+Owner pasted the seed-1339 Colab log directly (D0p stopping at step
+15260/18311, same point as the 2026-07-22 quota exhaustion this
+document already recorded) and, asked directly, **confirmed it is the
+same historical 2026-07-22 output, not a new run since.**
+
+**Claude Code's first pass at this drew the wrong conclusion from that
+fact — corrected by Claude Desktop before the erroneous version was
+committed (the commit was rejected, nothing wrong landed in git).** The
+error: testing "did new seed-1339 compute happen *after* the amendments
+were frozen" and concluding blind, since the answer was no. **The
+correct test is whether seed-1339 data existed *before drafting*, not
+whether it changed *after freezing*.** The amendments were drafted
+2026-07-23; the partial D0p/1339 run (train/val loss through step 15260,
+no `done:` line, so no len-gen ppl@512/1024) is dated **2026-07-22 —
+one day before drafting.** Pre-registration blindness requires the data
+not to exist, or not be observed, at the time of specification; data
+that already existed the day before, sitting in the same
+`PHASE4_session_close_2026-07-22.md` the amendments' own bars were set
+from, forecloses that regardless of whether anyone actually looked at
+it. **The owner was asked directly and does not recall** whether that
+partial output was consulted before drafting — a genuine "don't know,"
+not a "wasn't asked." Per the standing rule ("take the weaker label
+under any uncertainty"), that uncertainty resolves to the weaker label
+rather than being left open: **the correct label is post-hoc, not
+blind, for all four amendments (A1, A2, A3, A3-revised) uniformly.** Each file's "Ordering
+caveat" section corrected (struck through, not deleted, twice now —
+once for the original open caveat, once for Claude Code's own
+mislabeling — both kept for the record, per this project's standing
+correction convention of flagging errors rather than erasing them).
+
+**This does not remove the amendments' value** — a statistic fixed
+before seeing the *full* 18-run picture still beats one fixed
+afterward — it only requires accurate labeling in any future write-up:
+call it post-hoc analysis with early specification, not a
+pre-registered-blind test.
+
+Owner's choice for next steps on seed 1339 itself: **keep retrying on
+Colab A100** (not switching to T4, not restructuring into smaller
+chunks, not investigating the step-15260/18311-ish stall point
+specifically — those were offered as options and declined).
+
+This closes the single item that has been open across the entire
+multi-session amendment thread (§4a → §4b → §4c → this), with the
+correct answer rather than the first, wrong one. Nothing else in this
+document changes as a result — completeness gate (no grading until
+18/18) is untouched, and 1339 itself is still incomplete.
+
 ## 5. Loose threads — real, not forgotten, just not urgent
 
 - **Forward-citation traversal (`PRIOR_ART_REVIEW_zda.md` §7 item 3,

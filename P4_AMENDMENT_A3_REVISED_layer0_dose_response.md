@@ -271,7 +271,12 @@ a favourable result does not license a Phase 5 spec.
    own commit" instruction.
 5. Recorded in `HANDOFF.md` §4a alongside the existing trail.
 
-**Ordering caveat, same as A1/A2/A3:** frozen without independent
-confirmation of seed 1339's run status — see `HANDOFF.md` §4a's I1
-adjudication. If 1339 had already started before *this* file's freeze
-specifically, this file inherits the same relabeling consequence.
+**Ordering caveat — RESOLVED 2026-07-24, LABEL: POST-HOC, NOT BLIND**
+(same resolution and correction as A1/A2/A3 — see `HANDOFF.md` §4d and
+A1's caveat for the full reasoning). The owner confirmed the seed-1339
+log seen 2026-07-24 is the same 2026-07-22 historical run (D0p stalled
+at step 15260/18311) — **that date is before this file's own draft/
+freeze date (2026-07-23/24), same as A1/A2/A3**, so the same
+weaker-label rule applies: partial seed-1339 data existed before
+drafting, whether or not it was observed. **Label: post-hoc, not
+blind**, for the whole series uniformly.

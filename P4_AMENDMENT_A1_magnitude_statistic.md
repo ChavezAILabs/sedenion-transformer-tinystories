@@ -255,14 +255,36 @@ Written now, to be quoted verbatim in the write-up:
    `HANDOFF.md` log entry is the audit trail in place of a commit hash.)
 4. Recorded in `HANDOFF.md` in place of a commit hash (no git repo).
 
-**Ordering caveat, stated plainly:** this file was frozen before Claude
+**Ordering caveat — RESOLVED 2026-07-24, LABEL: POST-HOC, NOT BLIND.**
+~~An earlier pass here mislabeled this "confirmed blind" — wrong test.~~
+The owner confirmed the seed-1339 log pasted 2026-07-24 is the same
+historical Colab output from 2026-07-22 (D0p stalled at step
+15260/18311). **That date is the load-bearing fact, and it cuts the
+other way from the first read: 2026-07-22 is *before* this amendment was
+drafted (2026-07-23).** Pre-registration blindness requires the data not
+to exist, or not be observed, at drafting time — compute that happens
+*after* drafting preserves blindness; compute that happened *before*
+forecloses it, regardless of whether anyone looked. Partial seed-1339
+data (D0p train/val loss through step 15260 — no `done:` line, so no
+len-gen ppl@512/1024, which is a real limit on what could have leaked)
+already existed a full day before this amendment's 2026-07-23 draft
+date, sitting in the same `PHASE4_session_close_2026-07-22.md` this
+amendment's own A1.4 bars were set from. **Whether that partial output
+was actually observed before drafting is an owner-only fact and is not
+asserted either way here** — but per the standing rule ("take the weaker
+label under any uncertainty"), the mere prior existence of the data is
+enough. **Label: post-hoc analysis, not blind.** This does not remove
+this amendment's value (a statistic fixed before *full* analysis still
+beats one fixed during it), it just requires accurate labeling in any
+write-up. (Original two-caveat history kept below for the record.)
+~~this file was frozen before Claude
 Code had independent confirmation of seed 1339's run status — the
 owner's message that delivered these amendments predates this
 verification pass, and the assistant cannot observe Colab state
 directly. If seed 1339 had already started or completed by the time
 this freeze happened, the "blind" property is void and this amendment
 must be re-labelled ordinary post-hoc analysis, per its own rule. Flagged
-to the owner for confirmation; not resolved unilaterally.
+to the owner for confirmation; not resolved unilaterally.~~
 
 ---
 

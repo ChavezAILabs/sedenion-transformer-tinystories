@@ -294,12 +294,16 @@ completeness problem the standing orders exist to prevent.
    `HANDOFF.md` log entry is the audit trail in place of a commit hash.
 5. Recorded in `HANDOFF.md` in place of a commit hash.
 
-**Ordering caveat, stated plainly (same as A1/A2):** frozen without
-independent confirmation of seed 1339's run status at freeze time —
-flagged to the owner for confirmation. This matters less for A3 than for
-A1/A2 since A3's design doesn't reference seed-1339-adjacent statistics
-at all, but the handoff's own rule treats all three as one series, so
-the same caveat is stated here for consistency.
+**Ordering caveat — RESOLVED 2026-07-24, LABEL: POST-HOC, NOT BLIND**
+(same resolution and correction as A1/A2 — see A1's caveat for the full
+reasoning: the 2026-07-22 partial-1339 data predates this amendment's
+2026-07-23 draft date, so per the weaker-label rule it's labeled
+post-hoc, not blind, regardless of whether it was actually observed).
+~~frozen without independent confirmation of seed 1339's run status at
+freeze time — flagged to the owner for confirmation.~~ This matters less
+for A3 than for A1/A2 anyway, since A3's design doesn't reference
+seed-1339-adjacent statistics at all — but the label still applies for
+consistency across the series.
 
 **Remaining before execution (unchanged from A3.7's own schedule):**
 build the harness, pass all four A3.2 checks, confirm arm I reproduces

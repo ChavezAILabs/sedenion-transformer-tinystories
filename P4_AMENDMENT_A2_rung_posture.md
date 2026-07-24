@@ -202,10 +202,18 @@ headed section, and may not restate a graded outcome in softened terms.
    audit trail in place of a commit hash.
 4. Recorded in `HANDOFF.md` in place of a commit hash.
 
-**Ordering caveat, stated plainly (same as A1):** frozen without
-independent confirmation of seed 1339's run status at freeze time —
-flagged to the owner for confirmation. If 1339 had already started,
-re-label this ordinary post-hoc analysis per its own rule.
+**Ordering caveat — RESOLVED 2026-07-24, LABEL: POST-HOC, NOT BLIND**
+(same resolution and correction as A1 — see that file's caveat for the
+full reasoning). The owner confirmed the seed-1339 log seen 2026-07-24 is
+the same 2026-07-22 historical run (D0p stalled at step 15260/18311) —
+**that date is *before* this amendment's 2026-07-23 draft date**, so
+partial seed-1339 data (no `done:` line, no ppl@512/1024, but real
+train/val loss through step 15260) already existed at drafting time.
+Per the standing weaker-label-under-uncertainty rule: **label post-hoc,
+not blind.** ~~frozen without independent confirmation of seed 1339's run
+status at freeze time — flagged to the owner for confirmation. If 1339
+had already started, re-label this ordinary post-hoc analysis per its
+own rule.~~
 
 ---
 
