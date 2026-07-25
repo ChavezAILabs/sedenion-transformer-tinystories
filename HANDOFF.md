@@ -653,6 +653,103 @@ correct answer rather than the first, wrong one. Nothing else in this
 document changes as a result — completeness gate (no grading until
 18/18) is untouched, and 1339 itself is still incomplete.
 
+## 4e. GRID COMPLETE 18/18 (2026-07-25) — and an H4c readout bug found and fixed before any verdict is trusted
+
+**The grid finished.** All 18 runs (6 variants × 3 seeds) are done. This
+is the milestone the completeness gate has been protecting since
+2026-07-22. **But the first grand-summary printout is not to be trusted
+for H4c** — see below. H4a/H4b′ are unaffected; do not let the H4c
+incident cast doubt on those.
+
+**The incident.** The 18/18 grand summary printed H4c (S) as
+"negative," with **every per-head margin shown as `nan`** and numpy
+warnings ("Degrees of freedom <= 0 for slice", "invalid value
+encountered in divide"). A "negative" verdict computed from `nan`
+margins is not a genuine result — in IEEE754/numpy, any comparison
+against `nan` returns `False`, so a fully-nan margin array makes
+`hits` empty and prints "negative" **without ever actually testing a
+single head.** This was flagged immediately as unadjudicated, not
+negative, before being investigated.
+
+**Root cause, confirmed by direct code trace (not guessed):**
+`phase4_grid.py`'s `h4c_readout()` looped `for seed in seeds`, trusting
+the `seeds` *parameter* it received from `grand_summary()`, which in
+turn came straight from `main()`'s `--seeds` CLI argument — the same
+argument that also controls which seeds that particular invocation's
+**training** loop iterates. Those are two different concerns that got
+conflated: a later Colab invocation narrowing `--seeds` to just the one
+seed that still needed finishing (very plausible here, since seeds
+1337/1338 already had `summary.json` on disk and would be skipped by
+the `os.path.exists` check regardless of what `--seeds` said) silently
+propagated into the **grading readout** too. With `seeds=[1339]`,
+`h4c_readout`'s `p0` array had a seed axis of length 1; `p0.std(axis=0,
+ddof=1)` on a length-1 axis divides by zero (`N - ddof = 1 - 1 = 0`),
+producing exactly the observed warnings and `nan`. **Confirmed this
+isn't a misreading of the code**: `phase4_grid.py`'s local sha256
+(`65d419e05b6ec74dbfd2449c2548974290f668ca59be2618e78c803883a748ab`)
+matches the hash of the script that actually produced all 18 runs,
+checked before trusting the code-read at all. H4a/H4b′ were unaffected
+because they aggregate via `glob.glob(out_root/*/summary.json)`
+(auto-discovering every run on disk), never via the `seeds` parameter —
+this asymmetry is exactly why only H4c broke. This is also a direct
+violation of spec §5's own explicit rule, **"No grading from partial
+seeds"** — the bug is that the code didn't enforce a rule the spec
+already stated.
+
+**Fix applied to `phase4_grid.py`** (`h4c_readout`, plus a new
+`EXPECTED_N_SEEDS = 3` constant): seeds are now **discovered from the
+run directories actually present on disk** for the variant being
+graded (`glob` on `{variant}_seed*`), the same pattern H4a already used
+safely — never enumerated from the `seeds` argument, which is now used
+only as an informational cross-check. If the discovered seed count
+isn't exactly 3, the function refuses to grade ("cannot grade... No
+grading from partial seeds") and returns `None`, rather than silently
+computing on whatever subset happens to be present. **Separately, a
+generalizable robustness guard was added**: if a margin is ever
+non-finite even after that gate passes, the function now **raises**
+rather than lets a downstream comparison silently fall through to
+`False`. A verdict must never be emitted from `nan`.
+
+**Verified, not just written:** no access to the real 18-run
+`eval_log.jsonl`/`summary.json` exists in this repo (Colab-Drive-only,
+same limitation as every other data-dependent check this project has
+hit) — so the fix was verified with a **synthetic** reproduction
+(`test_h4c_fix.py`, run this session, not committed — scratch-only)
+matching the real data schema exactly: (A) 3 complete synthetic seeds
+compute real, finite margins with zero `RuntimeWarning`s (checked by
+promoting warnings to errors) and return a proper bool; (B) the *exact*
+bug scenario — only one seed's directory present, called the way a
+narrowed `--seeds` invocation would — now correctly prints "cannot
+grade" and returns `None`, not a `nan`-driven false "negative". Both
+checks passed. The existing `--debug` end-to-end path was also launched
+as a supplementary regression check; `import phase4_grid` succeeding at
+all (required for the synthetic test to run) already rules out any
+syntax-level breakage from this change.
+
+**What this fix does NOT do, per the task's explicit constraints:**
+it does not change H4c's statistic, margin, or threshold — spec §5's
+definition is untouched. It does not re-train anything. It does not
+grade H4a, H4b′, or draft any part of `RESULTS_phase4.md`. **It also
+does not, by itself, tell us what H4c's real verdict is** — that
+requires re-running the corrected `h4c_readout` against the actual
+complete 3-seed `eval_log.jsonl` data, which lives on Colab Drive, not
+in this repo. **Next step, owner-actionable:** either sync
+`p4_runs_ts/{S,X}_seed{1337,1338,1339}/eval_log.jsonl` to this machine,
+or re-run `phase4_grid.py`'s grand summary (with the corrected code,
+uploaded fresh) on Colab where the data already is, and report back
+the corrected H4c line. Until then, **H4c has no adjudicated verdict —
+it is unevaluated, not negative and not positive.**
+
+**Provenance, per the task's explicit constraint:** the script that
+produced all 18 runs is fixed at sha256
+`65d419e05b6ec74dbfd2449c2548974290f668ca59be2618e78c803883a748ab`,
+recorded here before any fix commit. All 18 runs were complete before
+this fix was written — this is a readout-code fix only, applied after
+training, never touching or re-triggering it. Committed as its own
+commit (not amended into any prior one), so the boundary between "the
+script that ran the grid" and "the script with the corrected readout"
+stays unambiguous in git history.
+
 ## 5. Loose threads — real, not forgotten, just not urgent
 
 - **Forward-citation traversal (`PRIOR_ART_REVIEW_zda.md` §7 item 3,

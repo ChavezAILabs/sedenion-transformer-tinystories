@@ -131,6 +131,13 @@ assert len(GRID_ORDER) == 6, (
 L_MAX = 1024          # frozen: length-gen eval length anchoring the ladder
 LG_CTXS = (256, 512, 1024)   # spec SS5 H4a clause reads ppl@1024
 MARGIN_K = 2.0        # standing margin: 2x pooled std (Phase 3 convention)
+EXPECTED_N_SEEDS = 3  # spec SS5: "all rules graded on pooled mean/std over
+                       # 3 seeds"; H4c bug postmortem 2026-07-25 (see
+                       # h4c_readout) -- this is the frozen registered
+                       # count, never derived from a CLI --seeds value,
+                       # which may legitimately be narrower for a single
+                       # training invocation without narrowing what a
+                       # valid GRADED readout requires.
 
 DIMS_TUNED = True     # checklist [1] DONE 2026-07-22 — match_table passes
 FLOPS_AUDITED = True   # checklist [2] DONE 2026-07-22 — audited op-by-op
@@ -846,9 +853,49 @@ def h4c_readout(out_root: str, seeds: list[int], variant: str = "S",
     p5(r2) is below its step-0 p5(r2) by more than 2x the pooled-across-
     seeds std of that head's step-0 p5, in ALL seeds (same head).
     graded=False (the X trace): same computation, descriptive language —
-    X's trace is against its OWN null structure and is never graded."""
+    X's trace is against its OWN null structure and is never graded.
+
+    BUG FIX 2026-07-25 (postmortem: H4c nan-margin/false-"negative"
+    incident, first seen on the completed 18-run grid, phase4_grid.py
+    sha256 65d419e05b6ec74d...). Root cause: this function used to loop
+    `for seed in seeds` over the *passed-in* seeds argument, which
+    grand_summary in turn got from main()'s `--seeds` CLI value — the
+    same value that also controls which seeds that invocation's TRAINING
+    loop iterates. Those are two different concerns: a later invocation
+    legitimately narrowing --seeds to finish one remaining seed (e.g.
+    `--seeds 1339`, since 1337/1338 already had summary.json and would
+    be skipped regardless) silently propagated into the READOUT too,
+    so h4c_readout pooled std(ddof=1) over a single-seed axis
+    (N=1, ddof=1 => N-ddof=0 => nan, matching the numpy "degrees of
+    freedom <= 0" warning exactly). nan comparisons are always False in
+    IEEE754, so `crossed` was False everywhere and "negative" printed —
+    a nan fall-through, not a genuine test of any head. Spec SS5 already
+    states "No grading from partial seeds"; this was a violation of that
+    rule via a code path that didn't enforce it. Compare the H4a/H4b'
+    path in grand_summary, which was never affected because it
+    auto-discovers every summary.json via glob rather than trusting the
+    CLI seeds list — h4c_readout now does the analogous thing: seeds are
+    discovered from the run directories actually present on disk for
+    THIS variant, and grading refuses (does not crash) unless exactly
+    EXPECTED_N_SEEDS are found. `seeds` is kept as a parameter only for
+    a diagnostic cross-check against what's discovered; it is never used
+    to enumerate what gets read."""
+    run_dirs = sorted(glob.glob(os.path.join(out_root, f"{variant}_seed*")))
+    discovered = sorted(
+        int(os.path.basename(d).rsplit("_seed", 1)[1]) for d in run_dirs)
+    if seeds and sorted(seeds) != discovered:
+        print(f"H4c ({variant}): NOTE — the seeds argument this function "
+              f"received ({sorted(seeds)}) differs from the seeds actually "
+              f"present on disk ({discovered}). Grading uses the "
+              f"discovered set. (This note existing, and grading not "
+              f"silently using the passed-in list, is the 2026-07-25 fix.)")
+    if len(discovered) != EXPECTED_N_SEEDS:
+        print(f"H4c ({variant}): {len(discovered)} seed(s) present on disk "
+              f"{discovered}, need exactly {EXPECTED_N_SEEDS} (spec SS5: "
+              f"\"No grading from partial seeds\") — cannot grade")
+        return None
     p0s, pTs = [], []
-    for seed in seeds:
+    for seed in discovered:
         recs = read_eval_log(os.path.join(out_root, f"{variant}_seed{seed}",
                                           "eval_log.jsonl"))
         if len(recs) < 2 or "r2_p5_head" not in recs[0]["diag"][0]:
@@ -859,7 +906,24 @@ def h4c_readout(out_root: str, seeds: list[int], variant: str = "S",
         pTs.append([d["r2_p5_head"] for d in recs[-1]["diag"]])
     p0 = np.array(p0s)   # (seeds, layers, heads)
     pT = np.array(pTs)
+    assert p0.shape[0] == EXPECTED_N_SEEDS, (
+        f"internal invariant violated: {p0.shape[0]} rows collected but "
+        f"{EXPECTED_N_SEEDS} seeds were discovered — this should be "
+        f"impossible given the loop above; investigate before trusting "
+        f"anything downstream")
     margin = MARGIN_K * p0.std(axis=0, ddof=1)         # (layers, heads)
+    # Robustness fix (generalizable beyond Phase 4, per the postmortem):
+    # a verdict must never be emitted from a non-finite margin. Raise
+    # rather than let a downstream comparison silently fall through to
+    # False (nan is never < or > anything) and print a false "negative".
+    if not np.all(np.isfinite(margin)):
+        bad = [(int(l), int(h))
+               for l, h in zip(*np.nonzero(~np.isfinite(margin)))]
+        raise RuntimeError(
+            f"H4c ({variant}): non-finite margin at (layer,head) {bad} "
+            f"despite {EXPECTED_N_SEEDS} seeds present and validated — "
+            f"this should not be possible; do not catch this and grade "
+            f"anyway, investigate the underlying p0 values first")
     crossed = pT < (p0 - margin[None])                 # per seed
     all_seeds = crossed.all(axis=0)                    # (layers, heads)
     hits = [(int(l), int(h)) for l, h in zip(*np.nonzero(all_seeds))]
