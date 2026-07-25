@@ -728,17 +728,85 @@ syntax-level breakage from this change.
 
 **What this fix does NOT do, per the task's explicit constraints:**
 it does not change H4c's statistic, margin, or threshold — spec §5's
-definition is untouched. It does not re-train anything. It does not
-grade H4a, H4b′, or draft any part of `RESULTS_phase4.md`. **It also
-does not, by itself, tell us what H4c's real verdict is** — that
-requires re-running the corrected `h4c_readout` against the actual
-complete 3-seed `eval_log.jsonl` data, which lives on Colab Drive, not
-in this repo. **Next step, owner-actionable:** either sync
-`p4_runs_ts/{S,X}_seed{1337,1338,1339}/eval_log.jsonl` to this machine,
-or re-run `phase4_grid.py`'s grand summary (with the corrected code,
-uploaded fresh) on Colab where the data already is, and report back
-the corrected H4c line. Until then, **H4c has no adjudicated verdict —
-it is unevaluated, not negative and not positive.**
+definition is untouched. It does not re-train anything.
+
+**Update, same day: the real data landed, and the corrected verdict is
+in.** The owner synced the actual grid outputs to `p4_artifacts/`
+(all 6 variants × 3 seeds, `eval_log.jsonl`/`summary.json`/
+`train_log.csv`, 56 files, committed separately at `e017bc2` — data
+only, no code in that commit). This is the first time this repo has had
+direct access to the real grid artifacts rather than working from
+hand-written descriptive summaries. Ran the corrected `h4c_readout`
+directly against it, then the full `grand_summary()` for the coherent
+picture (`phase4_grid.py`, unmodified since the `415506e` fix — no
+further code changes to produce this readout):
+
+```
+================ GRAND SUMMARY ================
+variant   n    val loss (mean ± std)   ppl@512  ppl@1024    k1 min  wall h
+D0p       3         1.6620 ± 0.0066      9.84     28.90  2.54e+00    0.60
+D0        3         1.6400 ± 0.0065      7.89     20.69  2.54e+00    0.60
+D1        3         1.6381 ± 0.0042     13.34     34.04  2.53e+00    0.67
+S         3         1.7980 ± 0.0033     11.37     34.90  1.33e+00    1.44
+X         3         1.7632 ± 0.0012     18.22     51.64  2.42e+00    1.44
+Q0        3         1.8211 ± 0.0079     20.54     45.88  0.00e+00    0.54
+
+H4a-1: S - D1 val = +0.1600, margin 0.0076 -> negative
+H4a-2: S - D0p ppl@1024 = +6.001 (margin 10.216) with |S - D0p| val =
+       0.1360 (within 0.0104) -> negative
+H4a: NEGATIVE
+H4b': not evaluated (conditional on an H4a win)
+H4c (S, per-head p5(r2) step-0 vs final, margin 2x pooled step-0 std,
+     same head in all seeds): PASS — heads
+     [(0,1), (0,2), (0,3), (0,4), (0,5), (2,3)]
+X manifold trace (descriptive, NOT graded): heads [(1,1), (2,0)] moved
+     beyond the H4c-style margin
+Wall-clock S/D0p = 2.39x (EXCEEDS the 2x bound)
+```
+
+**H4c (S) is a genuine, adjudicated PASS** — five of L0's six heads
+(H1–H5) plus one L2 head (H3) cross the frozen margin in all 3 seeds,
+consistent with the two-seed descriptive read's "S's L0 shows five of
+six heads with p5 dropping" (session-close §3(e)), now confirmed graded
+and with a third seed and one additional deeper-layer head added. **This
+answers the original task's steps 5–6 directly: the verdict changed
+from "unadjudicated (nan fall-through)" to a real, code-computed PASS —
+not assumed, not guessed.**
+
+**One correction this surfaces that needs to be carried forward
+carefully**: the "X manifold trace" descriptive line is the *same*
+`h4c_readout()` function called with `graded=False` — it was **equally
+affected by the nan bug** (the task's own evidence already showed "same
+nan pattern on all five rows" for X too). The corrected version shows
+**X does have 2 heads crossing** (L1H1, L2H0) — smaller drops, different
+layers than S's L0-heavy pattern, and far fewer heads (2 vs 6) — where
+the buggy readout had (falsely) shown zero. **This is a different
+statistic from session-close §3(e)'s "X never places a pair below
+r²=1e-2"** (that's `frac_r2_lt_1e2`, computed independently in the
+per-run trainer diagnostics, not through `h4c_readout` at all, and is
+unaffected by this bug — it remains accurate as reported). Don't
+conflate the two: "X never has a pair below the 1e-2 floor" (still true)
+and "no X head ever crosses the H4c-style p5 margin" (was false, an
+artifact of the same bug — 2 X heads do cross, modestly).
+
+**Explicitly not done here, and not to be inferred from this entry**:
+no interpretation of the H4a-negative/H4c-positive combination has been
+drafted. The frozen interpretation table (spec §5) only names
+H4a+/H4b′+, H4a+/H4b′−, and all-null — it does not have a named entry
+for "H4a negative, H4c positive," and inventing one now would be exactly
+the post-hoc narrative drift the table exists to prevent. This needs
+deliberate attention (a `RESULTS_phase4.md` drafting session), not an
+inline read appended to a bug-postmortem section. **What's safe to say
+now**: the mechanism (S measurably migrating toward its own manifold at
+several heads, across all 3 seeds) is real and graded-positive; it did
+not translate into a value win on this task under the frozen H4a rule.
+Both facts stand together and neither cancels the other.
+
+**Provenance for this readout specifically**: produced by importing
+`phase4_grid` and calling `h4c_readout()` / `grand_summary()` directly
+against `p4_artifacts/` — the same functions, same file
+(`phase4_grid.py`, unchanged since commit `415506e`), same frozen rules.
+Not a new script, not a reimplementation.
 
 **Provenance, per the task's explicit constraint:** the script that
 produced all 18 runs is fixed at sha256
