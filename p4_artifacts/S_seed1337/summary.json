@@ -1,0 +1,43 @@
+{
+  "variant": "S",
+  "seed": 1337,
+  "n_params": 13785828,
+  "final_val_loss": 1.7978986740112304,
+  "final_train_loss": 1.7748569190502166,
+  "val0": 8.467524,
+  "diverged": false,
+  "k1_guard_min": 1.3426227569580078,
+  "length_gen": {
+    "ctx256": {
+      "loss": 1.801859,
+      "ppl": 6.061
+    },
+    "ctx512": {
+      "loss": 2.49624,
+      "ppl": 12.137
+    },
+    "ctx1024": {
+      "loss": 3.68402,
+      "ppl": 39.806
+    }
+  },
+  "wall_time_s": 5197.4,
+  "config": {
+    "steps": 18311,
+    "batch_size": 64,
+    "lr": 0.0003,
+    "lr_min": 3e-05,
+    "warmup_steps": 2000,
+    "weight_decay": 0.1,
+    "grad_clip": 1.0,
+    "eval_interval": 1526,
+    "eval_iters": 40,
+    "log_interval": 50,
+    "d_model": 384,
+    "mlp_hidden": 1824,
+    "n_layers": 6,
+    "n_heads": 6,
+    "ctx": 256,
+    "vocab_size": 4096
+  }
+}
