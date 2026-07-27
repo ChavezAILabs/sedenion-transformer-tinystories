@@ -203,6 +203,18 @@ be a G₂-isometric homogeneous space — which converts the certificate from
 "count nulls and hope" into "compare against a known structure." Recommend
 Claude Code read this before running item 2 of the v1.0 blockers.
 
+**Addendum, 2026-07-26** (`PHASE5_verification_2026-07-26.md` §2.3): a
+cheaper certificate is now the recommended default ahead of the isometry-type
+framing above. Moreno (arXiv:q-alg/9710013, 1997) Cor. 1.5 gives
+‖xy‖=‖yx‖ for *all* x,y in a Cayley-Dickson algebra of dimension ≥16, not
+only zero-divisor pairs — repo-verified: exact to float64 machine precision
+(4.4×10⁻¹⁶) for the true tensor S over 5000 random unit pairs, vs. ~15%
+median relative asymmetry for the shuffled tensor X at every pinned seed.
+Holds on a full-measure set rather than the 14-dimensional zero locus, and
+needs no G₂/isometry machinery. The isometry-type framing
+(`phase4_reggiani_certificate.py`) remains valid and is not withdrawn, but
+the norm identity is the cheaper first check going forward.
+
 **(b) It bears on the ZDTP density question.** My earlier worry — that ZD
 density might grow with CD level until the gateway test discriminates nothing —
 is exactly the kind of question this literature answers. Biss–Dugger–Isaksen on
@@ -771,7 +783,7 @@ to our task family.
 3. Carried from §8.3: STAResNet abstract-level only; exhaustive
    GATr/Clifford citation counts pending API access.
 
-#### 8.4.8 Convention flag
+#### 8.4.8 Convention flag — **RESOLVED 2026-07-26**
 
 Sources in this sweep report sedenion zero-divisor counts and exemplar
 pairs inconsistent with the repo: 84 rather than 336, and pairs such as
@@ -781,6 +793,20 @@ multiplication-table convention. Per standing rule: flagged, not
 reconciled, not averaged. **Any of these figures must be converted into
 Baez and into the repo's counting before appearing beside a repo number
 in any draft.**
+
+**Resolved by `PHASE5_verification_2026-07-26.md` §1**, run fresh against
+`sedenion_kernel.py`: 84 and 336 are both correct, as counts of different
+objects in the same lattice — 84 = signed two-blade elements that act as a
+left zero-divisor factor (42 index sets × 2 signs), 336 = ordered pairs
+(84 elements × 4 partners each, confirmed exactly, no exceptions). A third
+object, "elements with unrestricted global sign" or equivalently "unordered
+pairs" (336/2, exact because of bilaterality — itself Moreno 1997 Cor. 1.6,
+see the same note §2), also comes to 168 — two different objects
+coinciding numerically. **This 168 collision is the most likely source of
+the cross-source mismatch**: a source quoting "84" or "168" may be counting
+any of several distinct objects, not making an error. Convention-mismatch
+flag downgraded to a specific, checkable disambiguation; no repo bug or
+kernel error found.
 
 #### Net position after §8.3 + §8.4
 
