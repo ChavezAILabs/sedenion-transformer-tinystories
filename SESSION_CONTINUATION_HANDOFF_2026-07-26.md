@@ -280,6 +280,15 @@ replacement — it's a cheap test for "does P have a good partner," not "is Q
 that partner." Whether that's architecturally useful is a design question.
 Note under G4; not a directive.
 
+**Addendum (Claude Code, 2026-07-27):** this closed form is Moreno 1998 /
+Koebisu (arXiv:2512.13002) Cor. 3.8, not a fresh derivation — both papers
+were already in `PRIOR_ART_REVIEW_zda.md` §3 (confirmed at lines
+188/190–192/476) since the 2026-07-20 pass, so "verified to machine
+precision on 40 variety points" should be read as a kernel-consistency
+check against a known result, not as new characterization work. No repo
+edit needed beyond this note: `PHASE5_PLAN.md` has no §3.4 and no
+closed-form-locus text to correct — the content lives only here.
+
 ### 3.5 Carried
 
 | item | notes |

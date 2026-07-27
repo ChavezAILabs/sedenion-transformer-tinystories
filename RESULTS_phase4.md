@@ -1,14 +1,16 @@
 # RESULTS — Phase 4 (ZDA grid, 18/18)
 
-**Status:** Verified against the repo by Claude Code, 2026-07-27 (see §12).
-Originally drafted chat-side; every number was independently reproduced from
-`p4_artifacts/*` by re-running `phase4_grid.py`'s own `grand_summary`/
-`h4c_readout` functions, or recomputed from source (`sedenion_kernel.py`,
-`phase4_layers.py`) rather than accepted on the draft's word. Two real errors
-found and corrected in place (§6.1, §8.1); everything else — including every
-number in §3–§5, §7, and §8.3 — reproduced exactly. §8.2's qualitative claims
-hold but its point-estimates are Monte-Carlo figures with sampling-method
-sensitivity; see the footnote there.
+**Status:** Verified against the repo by Claude Code, 2026-07-27, two passes
+(see §12, §12.1). Originally drafted chat-side; every number was independently
+reproduced from `p4_artifacts/*` by re-running `phase4_grid.py`'s own
+`grand_summary`/`h4c_readout` functions, or recomputed from source
+(`sedenion_kernel.py`, `phase4_layers.py`) rather than accepted on the
+draft's word. Two real errors found and corrected in place (§6.1, §8.1;
+§6.1 narrowed further on chat-side review, §12.1); everything else —
+including every number in §3–§5, §7, and §8.3 — reproduced exactly.
+§8.2's `cond(L_x)` is now a **proved closed form** (BCDI 2009, §12.1), not a
+Monte-Carlo estimate; its other two point-figures (E‖x⊛y‖, flexible/
+power-assoc residuals) remain Monte-Carlo with sampling-method sensitivity.
 
 **Grid:** complete, 18/18. Gate lifted; grand summary read out.
 **Script provenance:** all 18 runs produced by `phase4_grid.py` at
@@ -179,23 +181,41 @@ more room to differ.
 D0 (mlp 1536) beats D1 (mlp 1992) at both rungs — 7.89/20.69 against
 13.34/34.04 — with **fewer parameters and fewer flops**.
 
-**Correction (Claude Code, 2026-07-27): the draft's claim that rung
-performance "sorts monotonically by MLP width across D0 (1536) → S (1824) →
-D1 (1992) on both rungs" is false at ppl@1024.** It holds at ppl@512
-(7.89 < 11.37 < 13.34, exactly D0 < S < D1). At ppl@1024 the true order is
-**D0 (20.69) < D1 (34.04) < S (34.90)** — S has the *worst* ppl@1024 of the
-three despite a narrower MLP than D1 (1824 vs 1992). Recomputed directly from
+**Correction (Claude Code, 2026-07-27, narrowed 2026-07-27 per chat-side
+review): the draft's claim that rung performance "sorts monotonically by MLP
+width across D0 (1536) → S (1824) → D1 (1992) on both rungs" is false at
+ppl@1024, in raw ppl@1024.** It holds at ppl@512 (7.89 < 11.37 < 13.34,
+exactly D0 < S < D1). At ppl@1024 the true mean order is **D0 (20.69) <
+D1 (34.04) < S (34.90)**. Recomputed directly from
 `p4_artifacts/{D0,D1,S}_seed*/summary.json`.
 
-This changes the interpretation, not just the arithmetic: a pure width
-confound predicts D0 < S < D1 at both rungs. It holds at 512 and fails at
-1024, where S — the narrower of the two — is worst. That is evidence
-*against* MLP width alone driving S's ppl@1024 behavior, not for it. Q0 (mlp
-1727, worst rungs of any variant) already showed the monotonicity doesn't
-hold generally; this sharpens that into a specific, checkable failure at the
-1024 rung. Width remains a live confound worth isolating (Phase 5's D1824,
-§9.1) — this correction says the grid data don't yet support the strong
-"drives the outcome" reading the draft gave it.
+**Two qualifications, both required for the claim to be precise:**
+1. **Metric.** This is raw ppl@1024, the length-generalization rung reported
+   in §3's grand summary — not the normalized-extrapolation metric of §1's
+   executive summary (ppl@1024 / e^val, i.e. degradation from each variant's
+   own in-distribution fit). The two **disagree on this exact pair**:
+   normalized extrapolation puts S ahead of D1 (5.78× < 6.62×, S degrades
+   *less* from its own worse baseline), while raw ppl@1024 puts D1 ahead of S
+   (34.04 < 34.90, D1 is the lower absolute number). Both are correct; they
+   answer different questions. Any width account has to explain both
+   orderings, not just one.
+2. **Spread.** The D1-vs-S gap at ppl@1024 is ~2.5% of the mean, and the
+   grand summary only carries a reported std for val loss, not for
+   perplexity — per-seed ppl@1024 is highly variable for both (S: 30.52,
+   34.376, 39.806; D1: 24.628, 35.061, 42.442 — see §5.3's variance-asymmetry
+   note). **The robust claim is that monotonicity by width fails at
+   ppl@1024. "S is the worst of the three" is not robust without a reported
+   spread and should not be read as more than the raw mean ordering.**
+
+This still changes the interpretation, not just the arithmetic: a pure width
+confound predicts a single consistent D0 < S < D1 ordering. Raw ppl@1024
+breaks that ordering (D1 < S in the mean), and the normalized metric breaks
+it in the *other* direction (S < D1). That two-way disagreement — not the
+weaker "S is worst" reading — is the evidence against a simple width account,
+and it is what Phase 5's width-isolation run (D1824, §9.1) needs to be
+designed against. Q0 (mlp 1727, worst rungs of any variant) already showed
+the monotonicity doesn't hold generally; this sharpens that into a specific,
+checkable, metric-dependent failure at the 1024 rung.
 
 **Moot for H4a, which fails on clause 1 regardless.**
 
@@ -330,16 +350,39 @@ for random noise.
 in the table above is confirmed by independent recomputation from
 `structure_tensor()`/`shuffled_structure_tensor(seed)` — X has a left but not
 a two-sided identity, is not flexible, is not power-associative, and is
-markedly worse-conditioned than S (~15× at the median, same order of
-magnitude as the draft's "44–50" vs the repo's actual 40.6–43.2 across the
-three grid seeds; S itself reproduces at 2.68, not 2.8). The exact
-point-figures for E‖x⊛y‖, median cond(L_x), and the flexible/power-associative
-residuals are Monte-Carlo estimates (random unit-vector sampling); an
-independent draw reproduces the same order of magnitude and the same
-qualitative verdicts but not the same digits, since the draft doesn't specify
-its sample count or RNG. Treat this row as **qualitatively confirmed, point
-estimates approximate** — unlike §3–§5, §7, and §8.3, which reproduce exactly
-because they come from deterministic training logs or exhaustive enumeration.
+markedly worse-conditioned than S (same order of magnitude as the draft's
+"44–50" vs the repo's actual 40.6–43.2 across the three grid seeds).
+
+**Update, same day, later pass: `cond(L_x)` for S is no longer a sampled
+estimate — it is closed-form, via BCDI 2009 (arXiv:0905.2987) Cor. 7.3/Prop.
+3.10.** For any nonzero sedenion `v = (a₀, u, b₀, w)` (CD-doubled into two
+octonion halves, `u = v[1:8]`, `w = v[9:16]` their imaginary parts), left
+multiplication `L_v` has **exactly three eigenvalues of `L_vᵀL_v`, at fixed
+multiplicities (8, 4, 4) for every nonzero v**: `1` (×8), `1+S(v)` (×4),
+`1−S(v)` (×4), where `S(v) = 2·√(‖u‖²‖w‖² − ⟨u,w⟩²) / ‖v‖²`. Hence
+`cond(L_v) = √((1+S)/(1−S))` exactly. **Verified against this repo's actual
+`structure_tensor()` to floating-point precision**: max eigenvalue error
+3.6e-15 and max condition-number error 9.4e-12 over 5000 random unit v (the
+theorem's own precision claim, not approximate agreement). The eigenvalue
+multiplicity signature (8,4,4) itself is theorem-fixed — confirmed at
+**every one of 200 sampled points**, no exceptions — while the shuffled
+tensor X shows **16 distinct eigenvalues (no degeneracy at all) at every one
+of 200 sampled points, all three grid seeds** — a clean, non-overlapping
+binary discriminator, sharper than dimension or the earlier accessibility
+statistics. Recomputing the median with this closed form (N=5000,
+exact per-point) gives **2.7758**, superseding the earlier N=500 estimate
+(2.68) and close to the draft's 2.8; the remaining sampling dependence is in
+which random directions are drawn; there is no known closed form for the
+*median itself* over the uniform sphere, only for `cond(L_v)` at each v.
+
+The other two point-figures (E‖x⊛y‖, and the flexible/power-associative
+residuals) remain Monte-Carlo estimates without a closed form found so far;
+an independent draw reproduces the same order of magnitude and the same
+qualitative verdicts but not the same digits. Treat those two rows as
+**qualitatively confirmed, point estimates approximate**; `cond(L_x)` is now
+**exact per-point, theorem-backed**, unlike §3–§5, §7, and §8.3's
+deterministic-log/enumeration exactness, but exact in its own, stronger
+sense (a proved closed form, not just a reproduced sample).
 
 ### 8.3 Convention reconciliation (closes the 84-vs-336 flag)
 
@@ -412,6 +455,15 @@ literature counts.*
   raise on non-finite values rather than fall through comparison semantics.
 - A parameter shared between an execution loop and a readout loop is a latent
   correctness hazard: narrowing the run silently narrowed the grading.
+- **The §8.1 label error's failure mode was propagation, not discovery**
+  (chat-side observation, 2026-07-27): the layer-0-vs-whole-model fact was
+  already correctly established in `PHASE5_stage0_findings_2026-07-26.md`
+  §1 before this document was drafted. It just hadn't been carried into
+  `RESULTS_phase4.md` itself. A finding sitting correctly in one document
+  and incorrectly in another is a different failure than not having found
+  it — worth distinguishing when auditing multi-document, multi-session work,
+  since the fix (propagate) is different from the fix for a fresh error
+  (re-derive).
 
 ---
 
@@ -430,11 +482,16 @@ was regenerated from that source rather than checked by eye.
 - **§5 double-dissociation per-seed table** — reproduced exactly from each
   run's `summary.json` (`final_val_loss`, `length_gen.ctx512.ppl`,
   `length_gen.ctx1024.ppl`).
-- **§6.1** — **error found and corrected**: the "sorts monotonically ...
-  on both rungs" claim is false at ppl@1024 (true order D0 < D1 < S, not
-  D0 < S < D1). Verified against the same three variants' `summary.json`
-  files. Correction changes the interpretation (evidence against a pure
-  width confound at that rung, not for one).
+- **§6.1** — **error found and corrected, then narrowed after chat-side
+  review** (2026-07-27, second pass): the "sorts monotonically ... on both
+  rungs" claim is false at *raw* ppl@1024 in the mean (D0 < D1 < S, not
+  D0 < S < D1) — verified against the same three variants' `summary.json`
+  files. Narrowed on review: (1) this disagrees with §1's normalized-
+  extrapolation metric, which orders S ahead of D1 (5.78× < 6.62×) — the two
+  metrics answer different questions and both are correct; (2) the raw gap
+  is ~2.5% with no reported ppl spread (only val loss has one in the grand
+  summary), so "S is worst" is not a robust claim on its own — the robust
+  claim is that width-monotonicity fails at ppl@1024, full stop.
 - **§7.1–§7.3** — cross-checked against `phase4_grid.py`'s own in-code
   postmortem comment on the H4c bug (verbatim match) and against the
   layer-0 r²_min recomputation below; the 77.7×–121.3× range reproduces
@@ -460,6 +517,78 @@ was regenerated from that source rather than checked by eye.
   describe Colab-side events already recorded as confirmed in
   `SESSION_CONTINUATION_HANDOFF_2026-07-26.md` §2.1/§2.3 and not
   re-checkable from local artifacts alone.
+
+### 12.1 Second pass (2026-07-27, same day): BCDI eigenvalue theorem
+
+Chat side proposed a closed form for `cond(L_v)` (BCDI 2009, arXiv:0905.2987,
+Cor. 7.3/Prop. 3.10) as a blocking check on §8.2's Monte-Carlo caveat, plus
+four conditional re-derivations and a new Stage-0 statistic. All verified by
+direct computation against `structure_tensor()`, not by reading the cited
+paper (not fetched this pass).
+
+- **Blocking check: PASS, after one false start.** First attempt used
+  `u,w = v[:8], v[8:]` (the full CD-doubling halves) and got a large
+  mismatch (eigenvalue error 0.64) — traced to the wrong split. The correct
+  split is the **imaginary** octonion halves, `u = v[1:8]`, `w = v[9:16]`
+  (dropping each half's real component). With that fix: eigenvalues of
+  `L_vᵀL_v` match the predicted `{1×8, (1+S)×4, (1−S)×4}` to 3.6e-15, and
+  `cond(L_v) = √((1+S)/(1−S))` matches the SVD-computed condition number to
+  9.4e-12, over 5000 random unit v. See §8.2 for the updated caveat.
+- **Item 2(a)** (`D₂ = ‖v‖⁴(1−S²)`, cross-check against Koebisu's det
+  formula already in `HANDOFF.md` §3.3) — confirmed algebraically: Koebisu's
+  `D₂ = ‖v‖⁴ − 4(‖u‖²‖w‖² − ⟨u,w⟩²)` combined with the now-verified
+  `S(v)` gives `D₂ = ‖v‖⁴(1−S²)` exactly. Not written up as a Koebisu
+  novelty claim, per instruction.
+- **Item 2(b)** (`min` over unit Q of r² `= (1−S(P))·|P|²`, attained on
+  `Eig_{1−S}(P)`) — a direct Rayleigh-quotient consequence of the verified
+  eigendecomposition; confirmed numerically against exact `eigh` output on 5
+  random P (predicted value matches the true minimum eigenvalue exactly at
+  each).
+- **Item 2(c)** (`V₂(ℝ⁷) = G₂/SU(2)`) — not independently verified (the
+  source addendum wasn't available locally to check its exact statement),
+  but dimensionally self-consistent with everything else confirmed this
+  pass: `dim V₂(ℝ⁷) = 7·2 − 3 = 11 = dim G₂ − dim SU(2)`, and the `S(P)=1`
+  locus (zero-divisor-capable P) decomposes as an 11-dimensional base
+  (normalized `(u,w)` pairs with `Re=0, ‖u‖=‖w‖, ⟨u,w⟩=0` — this project's
+  own prior ZD characterization) times a 3-sphere of null-eigenspace
+  directions, `11+3=14`, matching item 2(d)'s independently-measured
+  dimension. Flagged as plausible-and-corroborated, not confirmed against
+  source.
+- **Item 2(d)** (does the repo's "dimension 14" mean the *normalized*-pair
+  variety?) — **confirmed by direct computation, not by re-reading old
+  doc text.** Built the Jacobian of `F(x,y)=x⊛y` at the known exact pair
+  `(e₃+e₁₂, e₅+e₁₀)`, restricted to the tangent space of `S¹⁵×S¹⁵`: ambient
+  30, rank 16, local dimension **14** — matches every "dimension 14"
+  citation in this repo. For contrast, the *unnormalized* variety in
+  `ℝ¹⁶×ℝ¹⁶` (no unit constraint) has dimension **16**, a genuinely
+  different number. `FINDINGS_zd_variety_characterization_2026-07-24.md`
+  §3.2's own method (ambient 30, rank of Jacobian) already measured the
+  normalized object; this independently confirms it rather than just
+  trusting the write-up.
+- **Item 5's proposed statistic (eigenvalue multiplicity signature)** — ran
+  it. S shows the `(8,4,4)` signature at **200/200** sampled points, no
+  exceptions (theorem-fixed, as expected). X shows **16 distinct
+  eigenvalues (no degeneracy at all) at 200/200** sampled points, all three
+  grid seeds. A clean, non-overlapping binary discriminator — recommended
+  over rank-deficiency for Stage 0 (see chat exchange, item 5).
+- **Item 4(a) verified, with a correction of its own**: Koebisu
+  (arXiv:2512.13002) and Biss–Dugger–Isaksen are indeed already in
+  `PRIOR_ART_REVIEW_zda.md` §3 (confirmed at lines 188/190–192/476, not
+  188/190–191/475 as claimed — a minor line-number drift, not a
+  substantive error). One correction to the correction: the "40 variety
+  points" closed-form claim it asks to fix in "`PHASE5_PLAN.md` §3.4" has
+  no such section — `PHASE5_PLAN.md` has no §3.4 and no closed-form-locus
+  text anywhere in it. That content lives in
+  `SESSION_CONTINUATION_HANDOFF_2026-07-26.md` §3.4 instead, already
+  committed, already hedged there as "speculative... a note under G4, not
+  a directive." Addressed by addendum in that file rather than editing
+  `PHASE5_PLAN.md`, which has nothing to correct on this point.
+- **Item 2(d) also closes item 4(b)'s premise**: since `min r²` for unit P
+  is now known in closed form (item 2(b)) and S's true zero divisors are
+  already known exactly (336 pairs, `sedenion_kernel.py`), "can S reach
+  r²=0" is a closed, proved fact for S, not an open question needing a
+  restart search. Stage 0 item 3's global-infimum check should be rescoped
+  to X only, as chat side proposed.
 
 **Net: two corrections (§6.1, §8.1), one caveat (§8.2), everything else in
 §3–§5, §7, and §8.3 exact.** The document's headline claims (H4a negative,

@@ -190,6 +190,16 @@ New:
 for S, since the two norms are equal everywhere (Moreno Cor. 1.5, verified
 to 4.4×10⁻¹⁶). Training it would only measure γ-init sensitivity.
 
+**V3b reopened, 2026-07-26/27 — not yet designed, no variant row yet.**
+It was moved out of scope on the reasoning that the symmetrized test would
+answer what it was for; S_sym's withdrawal above killed that test, leaving
+attribution without a conditioning-matched control. V3b (algebra broken,
+S's ~15–16× conditioning gap preserved) needs real design work before it can
+be added as a row: matching `cond(L_x)`'s theorem-fixed shape (BCDI 2009,
+eigenvalues `1×8, (1+S)×4, (1−S)×4` — see `RESULTS_phase4.md` §8.2/§12.1)
+requires generators that pairwise anticommute, which naive random sign flips
+on the true tensor do not give. Carried, not designed this pass.
+
 Carried from Phase 4 as reference at 3 seeds each, **not re-run**: S, X, D0p,
 D0, D1, Q0.
 
@@ -254,11 +264,33 @@ Gated. Each stage completes and reads out before the next is designed.
   artifact, it's what the model's actual init vectors experience.
 - Constrained-infimum check: freeze the tensor, disable the LM objective,
   optimize q,k projections directly against r². Returns each variant's
-  reachable floor and settles can't-vs-doesn't. **BLOCKED 2026-07-26** —
-  requires the trained grid checkpoints (~3GB, Drive-only per §9); confirmed
-  none exist locally. Not substituted with a fresh-init version without
-  approval, since that would answer a different question (see
-  `PHASE5_stage0_findings_2026-07-26.md` §3 for why).
+  reachable floor and settles can't-vs-doesn't. **Splits into two questions,
+  only one still open, per `SESSION_CONTINUATION_HANDOFF_2026-07-26.md` §3.1
+  and `RESULTS_phase4.md` §12.1 item 2(b)/2(d):**
+  - **Global, for S — CLOSED, by theorem, not by search.** `min` over unit Q
+    of r² `= (1−S(P))·|P|²` (BCDI 2009 Cor. 7.3/Prop. 3.10, verified to
+    floating-point precision against this repo's tensor — see
+    `RESULTS_phase4.md` §12.1). S's true zero divisors are already known
+    exactly (336 pairs, `sedenion_kernel.py`), so "can S reach r²=0" is a
+    proved fact, not an open question. **Do not spend restart-search compute
+    on S.**
+  - **Global, for X — still open, now the only variant worth running the
+    restart search on.** Unblocked, needs no checkpoints (fresh-init,
+    many restarts). Recommended statistic, superseding rank-deficiency:
+    the eigenvalue **multiplicity signature** of `L_Pᵀ L_P` — S shows the
+    theorem-fixed `(8,4,4)` pattern at every nonzero P (confirmed at
+    200/200 sampled points here); X shows 16 distinct eigenvalues (no
+    degeneracy) at 200/200 sampled points, all three grid seeds — a clean,
+    non-overlapping binary discriminator, cheaper than a restart search
+    (one eigendecomposition per sampled P, no optimization) and it
+    subsumes the `cond(L_x)` measurement in the same computation.
+  - **Local (from trained checkpoints) — still BLOCKED 2026-07-26**,
+    requires the trained grid checkpoints (~3GB, Drive-only per §9);
+    confirmed none exist locally. Only interesting if the global check
+    says X *can* reach low r² — otherwise the local question is moot. Not
+    substituted with a fresh-init version without approval, since that
+    would answer a different question (see
+    `PHASE5_stage0_findings_2026-07-26.md` §3 for why).
 - ~~Verify §2's bilaterality result against the repo's own tensors.~~ **DONE
   2026-07-26** — `PHASE5_verification_2026-07-26.md`. Also surfaced that
   bilaterality is Moreno (1997) Cor. 1.6, not new, and identified a cheaper
@@ -386,9 +418,9 @@ Closed unless deliberately reopened:
 - **Regime hunting** (modular arithmetic, algorithmic tasks, equivalence-class
   retrieval). Interesting and mechanism-derived, but speculative and a
   separate phase. Phase 5 is attribution, not application.
-- **The full V3 ladder** (isomorph / sign-flip / alternate-algebra controls).
-  The symmetrized test may answer what V3b was for at a fraction of the cost.
-  Revisit only if H5a is inconclusive.
+- **The full V3 ladder** (isomorph / sign-flip / alternate-algebra controls),
+  **except V3b — reopened 2026-07-26/27 (`SESSION_CONTINUATION_HANDOFF_2026-07-26.md`
+  §3.2), see §4.** The rest of the ladder stays closed.
 - **Beating dense baselines.** See §3, Non-goal.
 - Carried closed doors from Phase 4: no K1, no variant R, no β-equivalence
   test for K3, `ZD_PAIR` unchanged, γ/β never weight-decayed.
