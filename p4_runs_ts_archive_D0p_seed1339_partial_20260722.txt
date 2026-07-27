@@ -1,0 +1,176 @@
+[hygiene] TF32 disabled (spec SS9.2)
+variant  d_model   mlp      params   vs D0p   flops/tok     vs S
+------------------------------------------------------------------------
+D0p          384  1536  13,784,064   +0.00%  26,738,688  -13.58%
+D0           384  1536  13,784,064   +0.00%  26,738,688  -13.58%
+D1           384  1992  15,888,048  +15.26%  30,941,184   +0.00%
+S            384  1824  13,785,828   +0.01%  30,941,184   +0.00%
+X            384  1824  13,785,828   +0.01%  30,941,184   +0.00%
+Q0           384  1727  13,782,906   -0.01%  25,554,432  -17.41%
+[P1] ZD pair annihilates under this torch build       OK
+[P2] gamma init 1.0, 1-D (never weight-decayed)       OK
+[P3] K1 guard alive at init; causality holds          OK
+[P4] frozen omega ladder verified, S == D0p           OK
+[P5] forward at T=1024 (length-gen viable)          OK
+
+18,311 steps/run x 16,384 tokens/step = 300.0M tokens; eval every 1,526 steps
+=== D0p seed 1337: already complete, skipping ===
+=== D0 seed 1337: already complete, skipping ===
+=== D1 seed 1337: already complete, skipping ===
+=== S seed 1337 ===
+variant=S seed=1337 d_model=384 mlp=1824 params=13,785,828 device=cuda
+step      0 | lr 1.50e-07 | train 8.4676 | val 8.4675 | k1 1.34e+00 | 8s
+step   1526 | lr 2.29e-04 | train 3.3191 | val 3.3256 | k1 1.69e+00 | 440s
+step   3052 | lr 2.97e-04 | train 2.7498 | val 2.7521 | k1 2.03e+00 | 871s
+step   4578 | lr 2.84e-04 | train 2.4011 | val 2.4031 | k1 1.89e+00 | 1304s
+step   6104 | lr 2.60e-04 | train 2.1880 | val 2.2012 | k1 2.60e+00 | 1736s
+step   7630 | lr 2.28e-04 | train 2.0757 | val 2.0713 | k1 2.79e+00 | 2168s
+step   9156 | lr 1.91e-04 | train 1.9821 | val 1.9856 | k1 2.90e+00 | 2600s
+step  10682 | lr 1.51e-04 | train 1.9165 | val 1.9445 | k1 2.86e+00 | 3032s
+step  12208 | lr 1.13e-04 | train 1.8792 | val 1.8839 | k1 2.87e+00 | 3464s
+step  13734 | lr 7.91e-05 | train 1.8377 | val 1.8577 | k1 2.80e+00 | 3896s
+step  15260 | lr 5.26e-05 | train 1.8239 | val 1.8312 | k1 2.78e+00 | 4328s
+step  16786 | lr 3.58e-05 | train 1.7986 | val 1.8006 | k1 2.87e+00 | 4760s
+step  18311 | lr 3.00e-05 | train 1.7749 | val 1.7979 | k1 2.84e+00 | 5192s
+done: /content/drive/MyDrive/p4_runs_ts/S_seed1337  final val 1.7979  len-gen ppl 512/1024: 12.137/39.806  diverged=False  k1_min=1.34e+00  (5197s)
+=== X seed 1337 ===
+variant=X seed=1337 d_model=384 mlp=1824 params=13,785,828 device=cuda
+step      0 | lr 1.50e-07 | train 8.4676 | val 8.4676 | k1 2.70e+00 | 7s
+step   1526 | lr 2.29e-04 | train 3.2739 | val 3.2804 | k1 3.15e+00 | 442s
+step   3052 | lr 2.97e-04 | train 2.5842 | val 2.5855 | k1 4.55e+00 | 874s
+step   4578 | lr 2.84e-04 | train 2.2582 | val 2.2568 | k1 4.81e+00 | 1306s
+step   6104 | lr 2.60e-04 | train 2.0832 | val 2.0970 | k1 4.81e+00 | 1738s
+step   7630 | lr 2.28e-04 | train 1.9943 | val 1.9935 | k1 6.08e+00 | 2170s
+step   9156 | lr 1.91e-04 | train 1.9173 | val 1.9229 | k1 5.87e+00 | 2602s
+step  10682 | lr 1.51e-04 | train 1.8632 | val 1.8910 | k1 5.88e+00 | 3034s
+step  12208 | lr 1.13e-04 | train 1.8324 | val 1.8381 | k1 5.74e+00 | 3466s
+step  13734 | lr 7.91e-05 | train 1.7975 | val 1.8164 | k1 6.32e+00 | 3898s
+step  15260 | lr 5.26e-05 | train 1.7840 | val 1.7934 | k1 6.00e+00 | 4330s
+step  16786 | lr 3.58e-05 | train 1.7625 | val 1.7659 | k1 5.78e+00 | 4762s
+step  18311 | lr 3.00e-05 | train 1.7414 | val 1.7638 | k1 5.61e+00 | 5194s
+done: /content/drive/MyDrive/p4_runs_ts/X_seed1337  final val 1.7638  len-gen ppl 512/1024: 18.665/52.219  diverged=False  k1_min=2.70e+00  (5200s)
+=== Q0 seed 1337 ===
+variant=Q0 seed=1337 d_model=384 mlp=1727 params=13,782,906 device=cuda
+step      0 | lr 1.50e-07 | train 8.4784 | val 8.4789 | k1 0.00e+00 | 3s
+step   1526 | lr 2.29e-04 | train 3.1106 | val 3.1173 | k1 0.00e+00 | 164s
+step   3052 | lr 2.97e-04 | train 2.4821 | val 2.4834 | k1 0.00e+00 | 326s
+step   4578 | lr 2.84e-04 | train 2.2443 | val 2.2429 | k1 0.00e+00 | 487s
+step   6104 | lr 2.60e-04 | train 2.0993 | val 2.1141 | k1 0.00e+00 | 649s
+step   7630 | lr 2.28e-04 | train 2.0297 | val 2.0296 | k1 0.00e+00 | 810s
+step   9156 | lr 1.91e-04 | train 1.9634 | val 1.9696 | k1 0.00e+00 | 972s
+step  10682 | lr 1.51e-04 | train 1.9152 | val 1.9458 | k1 0.00e+00 | 1134s
+step  12208 | lr 1.13e-04 | train 1.8887 | val 1.8947 | k1 0.00e+00 | 1295s
+step  13734 | lr 7.91e-05 | train 1.8583 | val 1.8753 | k1 0.00e+00 | 1457s
+step  15260 | lr 5.26e-05 | train 1.8437 | val 1.8532 | k1 0.00e+00 | 1618s
+step  16786 | lr 3.58e-05 | train 1.8217 | val 1.8255 | k1 0.00e+00 | 1779s
+step  18311 | lr 3.00e-05 | train 1.8001 | val 1.8241 | k1 0.00e+00 | 1941s
+done: /content/drive/MyDrive/p4_runs_ts/Q0_seed1337  final val 1.8241  len-gen ppl 512/1024: 21.08/45.496  diverged=False  k1_min=0.00e+00  (1943s)
+=== D0p seed 1338 ===
+variant=D0p seed=1338 d_model=384 mlp=1536 params=13,784,064 device=cuda
+step      0 | lr 1.50e-07 | train 8.4760 | val 8.4759 | k1 2.54e+00 | 3s
+step   1526 | lr 2.29e-04 | train 2.8526 | val 2.8650 | k1 1.94e+01 | 184s
+step   3052 | lr 2.97e-04 | train 2.2280 | val 2.2412 | k1 1.79e+01 | 365s
+step   4578 | lr 2.84e-04 | train 2.0061 | val 2.0287 | k1 1.36e+01 | 546s
+step   6104 | lr 2.60e-04 | train 1.9013 | val 1.9160 | k1 1.83e+01 | 727s
+step   7630 | lr 2.28e-04 | train 1.8398 | val 1.8600 | k1 1.44e+01 | 908s
+step   9156 | lr 1.91e-04 | train 1.7832 | val 1.7910 | k1 1.51e+01 | 1088s
+step  10682 | lr 1.51e-04 | train 1.7535 | val 1.7646 | k1 2.20e+01 | 1269s
+step  12208 | lr 1.13e-04 | train 1.7158 | val 1.7401 | k1 1.74e+01 | 1451s
+step  13734 | lr 7.91e-05 | train 1.6847 | val 1.6967 | k1 1.72e+01 | 1632s
+step  15260 | lr 5.26e-05 | train 1.6831 | val 1.6899 | k1 1.85e+01 | 1812s
+step  16786 | lr 3.58e-05 | train 1.6568 | val 1.6832 | k1 1.76e+01 | 1993s
+step  18311 | lr 3.00e-05 | train 1.6488 | val 1.6670 | k1 1.49e+01 | 2174s
+done: /content/drive/MyDrive/p4_runs_ts/D0p_seed1338  final val 1.6670  len-gen ppl 512/1024: 6.89/24.406  diverged=False  k1_min=2.54e+00  (2176s)
+=== D0 seed 1338 ===
+variant=D0 seed=1338 d_model=384 mlp=1536 params=13,784,064 device=cuda
+step      0 | lr 1.50e-07 | train 8.4762 | val 8.4761 | k1 2.54e+00 | 3s
+step   1526 | lr 2.29e-04 | train 2.7822 | val 2.7942 | k1 1.35e+01 | 184s
+step   3052 | lr 2.97e-04 | train 2.1883 | val 2.2009 | k1 1.57e+01 | 365s
+step   4578 | lr 2.84e-04 | train 1.9777 | val 2.0023 | k1 1.78e+01 | 547s
+step   6104 | lr 2.60e-04 | train 1.8765 | val 1.8902 | k1 1.90e+01 | 727s
+step   7630 | lr 2.28e-04 | train 1.8139 | val 1.8347 | k1 1.66e+01 | 908s
+step   9156 | lr 1.91e-04 | train 1.7575 | val 1.7684 | k1 1.68e+01 | 1090s
+step  10682 | lr 1.51e-04 | train 1.7283 | val 1.7406 | k1 1.68e+01 | 1270s
+step  12208 | lr 1.13e-04 | train 1.6930 | val 1.7174 | k1 1.48e+01 | 1451s
+step  13734 | lr 7.91e-05 | train 1.6591 | val 1.6743 | k1 1.65e+01 | 1632s
+step  15260 | lr 5.26e-05 | train 1.6589 | val 1.6682 | k1 2.05e+01 | 1813s
+step  16786 | lr 3.58e-05 | train 1.6325 | val 1.6602 | k1 1.80e+01 | 1994s
+step  18311 | lr 3.00e-05 | train 1.6265 | val 1.6463 | k1 1.80e+01 | 2174s
+done: /content/drive/MyDrive/p4_runs_ts/D0_seed1338  final val 1.6463  len-gen ppl 512/1024: 7.817/19.462  diverged=False  k1_min=2.54e+00  (2176s)
+=== D1 seed 1338 ===
+variant=D1 seed=1338 d_model=384 mlp=1992 params=15,888,048 device=cuda
+step      0 | lr 1.50e-07 | train 8.4811 | val 8.4817 | k1 2.53e+00 | 4s
+step   1526 | lr 2.29e-04 | train 2.8344 | val 2.8457 | k1 1.51e+01 | 204s
+step   3052 | lr 2.97e-04 | train 2.2009 | val 2.2126 | k1 1.59e+01 | 404s
+step   4578 | lr 2.84e-04 | train 1.9819 | val 2.0063 | k1 1.56e+01 | 605s
+step   6104 | lr 2.60e-04 | train 1.8781 | val 1.8915 | k1 1.94e+01 | 806s
+step   7630 | lr 2.28e-04 | train 1.8158 | val 1.8361 | k1 2.35e+01 | 1006s
+step   9156 | lr 1.91e-04 | train 1.7579 | val 1.7692 | k1 2.14e+01 | 1207s
+step  10682 | lr 1.51e-04 | train 1.7306 | val 1.7415 | k1 1.94e+01 | 1408s
+step  12208 | lr 1.13e-04 | train 1.6928 | val 1.7159 | k1 1.89e+01 | 1608s
+step  13734 | lr 7.91e-05 | train 1.6575 | val 1.6708 | k1 1.82e+01 | 1808s
+step  15260 | lr 5.26e-05 | train 1.6555 | val 1.6650 | k1 2.05e+01 | 2009s
+step  16786 | lr 3.58e-05 | train 1.6293 | val 1.6584 | k1 1.78e+01 | 2209s
+step  18311 | lr 3.00e-05 | train 1.6236 | val 1.6428 | k1 1.99e+01 | 2410s
+done: /content/drive/MyDrive/p4_runs_ts/D1_seed1338  final val 1.6428  len-gen ppl 512/1024: 14.458/35.061  diverged=False  k1_min=2.53e+00  (2412s)
+=== S seed 1338 ===
+variant=S seed=1338 d_model=384 mlp=1824 params=13,785,828 device=cuda
+step      0 | lr 1.50e-07 | train 8.4751 | val 8.4749 | k1 1.33e+00 | 7s
+step   1526 | lr 2.29e-04 | train 3.3103 | val 3.3229 | k1 1.68e+00 | 443s
+step   3052 | lr 2.97e-04 | train 2.7321 | val 2.7489 | k1 1.78e+00 | 875s
+step   4578 | lr 2.84e-04 | train 2.3936 | val 2.4188 | k1 2.04e+00 | 1307s
+step   6104 | lr 2.60e-04 | train 2.1910 | val 2.2035 | k1 2.50e+00 | 1739s
+step   7630 | lr 2.28e-04 | train 2.0710 | val 2.0869 | k1 2.72e+00 | 2170s
+step   9156 | lr 1.91e-04 | train 1.9794 | val 1.9895 | k1 2.66e+00 | 2602s
+step  10682 | lr 1.51e-04 | train 1.9255 | val 1.9378 | k1 2.78e+00 | 3034s
+step  12208 | lr 1.13e-04 | train 1.8755 | val 1.8958 | k1 2.87e+00 | 3466s
+step  13734 | lr 7.91e-05 | train 1.8327 | val 1.8431 | k1 2.90e+00 | 3897s
+step  15260 | lr 5.26e-05 | train 1.8241 | val 1.8307 | k1 2.85e+00 | 4329s
+step  16786 | lr 3.58e-05 | train 1.7944 | val 1.8188 | k1 2.80e+00 | 4761s
+step  18311 | lr 3.00e-05 | train 1.7859 | val 1.8014 | k1 2.90e+00 | 5192s
+done: /content/drive/MyDrive/p4_runs_ts/S_seed1338  final val 1.8014  len-gen ppl 512/1024: 11.216/34.376  diverged=False  k1_min=1.33e+00  (5198s)
+=== X seed 1338 ===
+variant=X seed=1338 d_model=384 mlp=1824 params=13,785,828 device=cuda
+step      0 | lr 1.50e-07 | train 8.4754 | val 8.4752 | k1 2.62e+00 | 7s
+step   1526 | lr 2.29e-04 | train 3.2538 | val 3.2683 | k1 3.12e+00 | 441s
+step   3052 | lr 2.97e-04 | train 2.5682 | val 2.5850 | k1 4.62e+00 | 873s
+step   4578 | lr 2.84e-04 | train 2.2490 | val 2.2744 | k1 4.90e+00 | 1304s
+step   6104 | lr 2.60e-04 | train 2.0869 | val 2.0993 | k1 4.92e+00 | 1736s
+step   7630 | lr 2.28e-04 | train 1.9911 | val 2.0111 | k1 5.15e+00 | 2168s
+step   9156 | lr 1.91e-04 | train 1.9123 | val 1.9243 | k1 5.37e+00 | 2599s
+step  10682 | lr 1.51e-04 | train 1.8720 | val 1.8846 | k1 5.50e+00 | 3031s
+step  12208 | lr 1.13e-04 | train 1.8287 | val 1.8503 | k1 5.55e+00 | 3463s
+step  13734 | lr 7.91e-05 | train 1.7875 | val 1.8008 | k1 5.67e+00 | 3895s
+step  15260 | lr 5.26e-05 | train 1.7842 | val 1.7908 | k1 5.58e+00 | 4327s
+step  16786 | lr 3.58e-05 | train 1.7558 | val 1.7815 | k1 5.50e+00 | 4759s
+step  18311 | lr 3.00e-05 | train 1.7480 | val 1.7640 | k1 5.45e+00 | 5190s
+done: /content/drive/MyDrive/p4_runs_ts/X_seed1338  final val 1.7640  len-gen ppl 512/1024: 18.045/51.605  diverged=False  k1_min=2.62e+00  (5196s)
+=== Q0 seed 1338 ===
+variant=Q0 seed=1338 d_model=384 mlp=1727 params=13,782,906 device=cuda
+step      0 | lr 1.50e-07 | train 8.4606 | val 8.4611 | k1 0.00e+00 | 3s
+step   1526 | lr 2.29e-04 | train 3.1128 | val 3.1272 | k1 0.00e+00 | 164s
+step   3052 | lr 2.97e-04 | train 2.4700 | val 2.4851 | k1 0.00e+00 | 326s
+step   4578 | lr 2.84e-04 | train 2.2289 | val 2.2540 | k1 0.00e+00 | 487s
+step   6104 | lr 2.60e-04 | train 2.1026 | val 2.1165 | k1 0.00e+00 | 648s
+step   7630 | lr 2.28e-04 | train 2.0274 | val 2.0440 | k1 0.00e+00 | 810s
+step   9156 | lr 1.91e-04 | train 1.9612 | val 1.9718 | k1 0.00e+00 | 971s
+step  10682 | lr 1.51e-04 | train 1.9268 | val 1.9390 | k1 0.00e+00 | 1133s
+step  12208 | lr 1.13e-04 | train 1.8853 | val 1.9088 | k1 0.00e+00 | 1294s
+step  13734 | lr 7.91e-05 | train 1.8491 | val 1.8626 | k1 0.00e+00 | 1456s
+step  15260 | lr 5.26e-05 | train 1.8487 | val 1.8542 | k1 0.00e+00 | 1618s
+step  16786 | lr 3.58e-05 | train 1.8185 | val 1.8430 | k1 0.00e+00 | 1779s
+step  18311 | lr 3.00e-05 | train 1.8127 | val 1.8271 | k1 0.00e+00 | 1941s
+done: /content/drive/MyDrive/p4_runs_ts/Q0_seed1338  final val 1.8271  len-gen ppl 512/1024: 20.962/47.18  diverged=False  k1_min=0.00e+00  (1943s)
+=== D0p seed 1339 ===
+variant=D0p seed=1339 d_model=384 mlp=1536 params=13,784,064 device=cuda
+step      0 | lr 1.50e-07 | train 8.4397 | val 8.4416 | k1 2.71e+00 | 3s
+step   1526 | lr 2.29e-04 | train 2.8627 | val 2.8582 | k1 1.73e+01 | 184s
+step   3052 | lr 2.97e-04 | train 2.2176 | val 2.2483 | k1 1.58e+01 | 366s
+step   4578 | lr 2.84e-04 | train 2.0165 | val 2.0137 | k1 1.51e+01 | 547s
+step   6104 | lr 2.60e-04 | train 1.9157 | val 1.9168 | k1 1.60e+01 | 728s
+step   7630 | lr 2.28e-04 | train 1.8314 | val 1.8624 | k1 2.10e+01 | 910s
+step   9156 | lr 1.91e-04 | train 1.7917 | val 1.8000 | k1 1.54e+01 | 1091s
+step  10682 | lr 1.51e-04 | train 1.7622 | val 1.7699 | k1 1.53e+01 | 1273s
+step  12208 | lr 1.13e-04 | train 1.7265 | val 1.7298 | k1 1.62e+01 | 1454s
+step  13734 | lr 7.91e-05 | train 1.6871 | val 1.7065 | k1 1.50e+01 | 1635s
+step  15260 | lr 5.26e-05 | train 1.6750 | val 1.6780 | k1 1.62e+01 | 1816s
