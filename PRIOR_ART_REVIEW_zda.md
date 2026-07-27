@@ -186,12 +186,28 @@ Supporting literature:
 - Moreno, G. **"Constructing zero divisors in the higher dimensional
   Cayley–Dickson algebras."** arXiv:math/0512517 (2005).
 - Biss, Dugger, Isaksen. **"Large annihilators in Cayley–Dickson algebras."**
-  Comm. Algebra 36 (2008).
-- **"Determinant Factorization for Left Multiplication in the Sedenions."**
-  arXiv:2512.13002 (2025). Zero-divisor locus via det of left multiplication;
-  the algebraic locus in ℝ¹⁶ is *singular*, but the normalized nonzero locus is
-  *smooth*.
+  Comm. Algebra 36 (2008). [read, 2026-07-20 — abstract + annihilator-scaling
+  content used in §3.1(b)]
+- Koebisu. **"Determinant Factorization for Left Multiplication in the
+  Sedenions."** arXiv:2512.13002 (2025; v1 titled *Singular Structures and
+  Geometric Holonomy in the Zero-Divisor Set of the Sedenions*, 15 Dec 2025;
+  v2, 26 Mar 2026. Single author, no institutional affiliation). **[read at
+  content level, 2026-07-27]** — det L_v = D₁⁴D₂², D₂ = ‖v‖⁴ − 4(‖u‖²‖w‖² −
+  ⟨u,w⟩²); the algebraic ZD locus in ℝ¹⁶ is singular, the normalized nonzero
+  locus is smooth; Cor. 3.8 gives the classical ZD characterization
+  (Re(v₁)=Re(v₂)=0, ‖u‖=‖w‖, ⟨u,w⟩=0), attributed there to Moreno 1998; Thm
+  4.2 identifies the image of the first-factor projection of the normalized
+  ZD pair variety with the Stiefel manifold V₂(ℝ⁷) (dim 11) — see the
+  dimension-14 decomposition in §3.1(d) below. Prior entry here was
+  abstract-level only (see §8.4.7 item 4) — this is the correction.
+- Biss–Christensen–Dugger–Isaksen. **"Eigentheory of Cayley–Dickson
+  algebras."** Forum Math. 21 (2009) 833–851, arXiv:0905.2987. **[read at
+  content level, 2026-07-27]** — the full spectral theory this project's
+  `cond(L_x)` closed form and annihilator-dimension result rest on; see
+  §3.1(a)'s co-citation and §3.1(d) below. Was entirely absent before
+  2026-07-27, not merely abstract-level.
 - de Marrais, R. Box-kite / ZD-ensemble program, e.g. arXiv:0804.3416.
+  [abstract-only]
 
 ### 3.1 Why this matters operationally
 
@@ -214,6 +230,50 @@ Holds on a full-measure set rather than the 14-dimensional zero locus, and
 needs no G₂/isometry machinery. The isometry-type framing
 (`phase4_reggiani_certificate.py`) remains valid and is not withdrawn, but
 the norm identity is the cheaper first check going forward.
+
+**Co-citation, 2026-07-27:** Biss–Christensen–Dugger–Isaksen, *Eigentheory of
+Cayley–Dickson algebras* (Forum Math. 21 (2009) 833–851, arXiv:0905.2987)
+Lemma 2.10 proves the same identity, ‖xy‖=‖yx‖ for all x,y in any Aₙ, with
+**no dimension restriction** (a six-line proof from their Lemma 2.4) — add
+alongside Moreno Cor. 1.5's dimension-≥16 statement rather than replacing it.
+This paper is also the source of the closed-form `cond(L_x)` used in
+`RESULTS_phase4.md` §8.2/§12.1 (Cor. 7.3, Prop. 3.10) and the exact
+annihilator-dimension result in (b) below (Prop. 3.20, Prop. 7.4).
+
+**(d) The "dimension 14" figure decomposes — and the total's genericity was
+the wrong reason for dismissing it (chat-side finding, 2026-07-27,
+repo-verified).** `RESULTS_phase4.md` §8.2 dismisses variety dimension as a
+discriminator on the grounds that 14 is generic to any bilinear map
+(30 ambient − 16 equations). **The conclusion survives; that reason is
+incomplete.** Two different 14s coincide numerically: Reggiani's dim G₂, and
+the generic-bilinear-map count. For S specifically the 14 is not an
+undifferentiated total — it decomposes as **11 + 3**, forced three
+independent ways: Reggiani (𝒵(𝕊) ≅ G₂, dim 14); Koebisu Thm 4.2 (the
+first-factor projection's image is V₂(ℝ⁷), dim 2·7−3 = 11, via the
+G₂→S⁶→SU(3)→S⁵→SU(2) transitivity chain — not independently re-derived
+here, standard octonion/G₂ Lie theory, plausible but unverified against
+source); BDI Prop. 3.20/7.4 (every eigenspace, hence every annihilator, is a
+multiple of 4 — realized exactly at 4, not just bounded by it, confirmed
+below). A generic bilinear map's normalized pair variety instead decomposes
+as **14 + 0**: full-dimensional base, zero-dimensional (generic,
+1-dimensional unnormalized) fiber. **Same total, opposite shape** — S's
+zero-divisor locus is codimension 4 in P, not codimension 1, and its
+annihilator is 4-dimensional, not 1-dimensional.
+
+**Repo-verified, 2026-07-27:** the annihilator dimension is **exactly 4** at
+every one of 20 distinct exact zero-divisor elements checked for S (spectrum
+collapses to `{0×4, 1×8, 2×4}` exactly at each, matching BCDI Prop. 7.4
+verbatim) — not a bound, realized exactly, every time. **For X, measured at
+found near-zero-divisor points (Adam optimization to σ_min ≈ 1e-16, all
+three grid seeds): annihilator dimension is exactly 1** — the next-smallest
+eigenvalue clears zero by 0.012–0.019 at every seed, no ambiguity. This
+matches the "generic bilinear map" prediction exactly and gives a second,
+independent binary discriminator (S: 4, X: 1) alongside the eigenvalue
+multiplicity signature (S: `(8,4,4)` everywhere; X: 16 distinct everywhere)
+— both theorem-backed for S before measurement, both now measured for X, and
+both point the same direction: S's zero-divisor structure is a genuine,
+non-generic linear phenomenon; X's, where it exists, is generic and
+isolated. See `RESULTS_phase4.md` §12.3 for the full record.
 
 **(b) It bears on the ZDTP density question.** My earlier worry — that ZD
 density might grow with CD level until the gateway test discriminates nothing —
@@ -782,6 +842,18 @@ to our task family.
    intended to support more than a paper.
 3. Carried from §8.3: STAResNet abstract-level only; exhaustive
    GATr/Clifford citation counts pending API access.
+4. **Abstract-level entries were being carried as if read (chat-side
+   finding, 2026-07-27, accepted).** Koebisu (arXiv:2512.13002) was cited
+   in §3 from 2026-07-20 and in §8.3 from 2026-07-23, both times at
+   abstract level. Its own Cor. 3.8 was then independently rediscovered
+   numerically and briefly written into `PHASE5_PLAN.md`'s planning
+   material as a fresh lead before being corrected — the search had
+   already succeeded; the citation just hadn't been read past its
+   abstract. Distinct from items 1–3 above, which are coverage gaps
+   closable by more search: this one isn't, and more keyword queries
+   won't fix it. Every §3 entry should be marked **[read]** or
+   **[abstract-only]** going forward (done for the entries touched this
+   pass; not yet audited for the rest of §3).
 
 #### 8.4.8 Convention flag — **RESOLVED 2026-07-26**
 

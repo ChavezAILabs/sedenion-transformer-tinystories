@@ -274,16 +274,21 @@ Gated. Each stage completes and reads out before the next is designed.
     exactly (336 pairs, `sedenion_kernel.py`), so "can S reach r²=0" is a
     proved fact, not an open question. **Do not spend restart-search compute
     on S.**
-  - **Global, for X — still open, now the only variant worth running the
-    restart search on.** Unblocked, needs no checkpoints (fresh-init,
-    many restarts). Recommended statistic, superseding rank-deficiency:
-    the eigenvalue **multiplicity signature** of `L_Pᵀ L_P` — S shows the
+  - **Global, for X — still open for the full restart search, but two
+    cheap discriminators already ran and both separate S from X cleanly.**
+    Unblocked, needs no checkpoints. **(1) Eigenvalue multiplicity
+    signature** of `L_Pᵀ L_P` at generic (non-variety) P — S shows the
     theorem-fixed `(8,4,4)` pattern at every nonzero P (confirmed at
-    200/200 sampled points here); X shows 16 distinct eigenvalues (no
-    degeneracy) at 200/200 sampled points, all three grid seeds — a clean,
-    non-overlapping binary discriminator, cheaper than a restart search
-    (one eigendecomposition per sampled P, no optimization) and it
-    subsumes the `cond(L_x)` measurement in the same computation.
+    200/200 sampled points); X shows 16 distinct eigenvalues (no
+    degeneracy) at 200/200 sampled points, all three grid seeds. **(2)
+    Annihilator dimension** at variety points specifically (proposed in
+    `PRIOR_ART_addendum_2026-07-27.md` §4, theorem-fixed at 4 for S via
+    BDI Prop. 3.20/7.4) — measured for X by finding near-zero-divisor
+    points (Adam, σ_min≈1e-16) and reading off the null-eigenspace
+    dimension: **exactly 1, every seed**, matching the generic-bilinear-map
+    prediction. Full record: `RESULTS_phase4.md` §12.3. Neither needed a
+    restart search (one eigendecomposition per sampled/found P); both
+    subsume the `cond(L_x)` measurement in the same computation.
   - **Local (from trained checkpoints) — still BLOCKED 2026-07-26**,
     requires the trained grid checkpoints (~3GB, Drive-only per §9);
     confirmed none exist locally. Only interesting if the global check
@@ -291,6 +296,15 @@ Gated. Each stage completes and reads out before the next is designed.
     substituted with a fresh-init version without approval, since that
     would answer a different question (see
     `PHASE5_stage0_findings_2026-07-26.md` §3 for why).
+  - **Init-time partial answer — DONE 2026-07-27, `RESULTS_phase4.md`
+    §12.2.** Not a substitute for the local (trained-checkpoint) question,
+    but cheap, unblocked, and real-init-sampled (not free-sphere): at fresh
+    untrained init, S's real queries land within 2× of their achievable
+    floor 40% of the time (median ratio 2.3×); X's floor is ~100–150×
+    lower than S's, but real keys never come close to it (0% within 2×,
+    all seeds, median ratio 200–246×) — X's larger accessible region isn't
+    something random projections stumble into by chance either. Sharpens
+    the "doesn't" reading without resolving can't-vs-doesn't outright.
 - ~~Verify §2's bilaterality result against the repo's own tensors.~~ **DONE
   2026-07-26** — `PHASE5_verification_2026-07-26.md`. Also surfaced that
   bilaterality is Moreno (1997) Cor. 1.6, not new, and identified a cheaper

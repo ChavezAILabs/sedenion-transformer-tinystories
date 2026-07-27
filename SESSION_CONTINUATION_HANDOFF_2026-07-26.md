@@ -280,14 +280,20 @@ replacement — it's a cheap test for "does P have a good partner," not "is Q
 that partner." Whether that's architecturally useful is a design question.
 Note under G4; not a directive.
 
-**Addendum (Claude Code, 2026-07-27):** this closed form is Moreno 1998 /
-Koebisu (arXiv:2512.13002) Cor. 3.8, not a fresh derivation — both papers
-were already in `PRIOR_ART_REVIEW_zda.md` §3 (confirmed at lines
-188/190–192/476) since the 2026-07-20 pass, so "verified to machine
-precision on 40 variety points" should be read as a kernel-consistency
-check against a known result, not as new characterization work. No repo
-edit needed beyond this note: `PHASE5_PLAN.md` has no §3.4 and no
-closed-form-locus text to correct — the content lives only here.
+**Addendum (Claude Code, 2026-07-27, amended same day per chat-side
+review):** this closed form is Moreno 1998 / Koebisu (arXiv:2512.13002)
+Thm 3.9 / Cor. 3.8, not a fresh derivation — both papers were already in
+`PRIOR_ART_REVIEW_zda.md` §3 (confirmed at lines 188/190–192/476, minor
+line-number drift from an earlier check, not substantive) since the
+2026-07-20 pass. That is a citation correction, nothing more: this section
+was already labeled speculative and non-directive ("Note under G4; not a
+directive") when it was written, and stayed that way — it never escalated
+into a claim or entered `PHASE5_PLAN.md`, which has no §3.4 and no
+closed-form-locus text anywhere. An earlier version of this note implied
+otherwise (framed the citation gap as something that had escalated past its
+speculative status); that framing is withdrawn. The only actionable content
+here is: cite Moreno/Koebisu when this closed form is used, since it's a
+known result being applied, not new characterization work.
 
 ### 3.5 Carried
 

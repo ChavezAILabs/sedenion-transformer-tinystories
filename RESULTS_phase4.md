@@ -1,7 +1,7 @@
 # RESULTS — Phase 4 (ZDA grid, 18/18)
 
-**Status:** Verified against the repo by Claude Code, 2026-07-27, two passes
-(see §12, §12.1). Originally drafted chat-side; every number was independently
+**Status:** Verified against the repo by Claude Code, 2026-07-27, four passes
+(see §12–§12.3). Originally drafted chat-side; every number was independently
 reproduced from `p4_artifacts/*` by re-running `phase4_grid.py`'s own
 `grand_summary`/`h4c_readout` functions, or recomputed from source
 (`sedenion_kernel.py`, `phase4_layers.py`) rather than accepted on the
@@ -9,8 +9,10 @@ draft's word. Two real errors found and corrected in place (§6.1, §8.1;
 §6.1 narrowed further on chat-side review, §12.1); everything else —
 including every number in §3–§5, §7, and §8.3 — reproduced exactly.
 §8.2's `cond(L_x)` is now a **proved closed form** (BCDI 2009, §12.1), not a
-Monte-Carlo estimate; its other two point-figures (E‖x⊛y‖, flexible/
-power-assoc residuals) remain Monte-Carlo with sampling-method sensitivity.
+Monte-Carlo estimate, and gained a second exact companion result — the
+annihilator dimension (S: 4, X: 1, both confirmed by direct measurement,
+§12.3). §8.2's other two point-figures (E‖x⊛y‖, flexible/power-assoc
+residuals) remain Monte-Carlo with sampling-method sensitivity.
 
 **Grid:** complete, 18/18. Gate lifted; grand summary read out.
 **Script provenance:** all 18 runs produced by `phase4_grid.py` at
@@ -336,15 +338,23 @@ shuffle spec:
 | median cond(L_x) | 2.8 | **44–50** |
 
 X *does* possess a zero-divisor variety (infimum ≈ 0, confirmed by two
-independent implementations), of the same dimension as S's. But **dimension 14
-is generic**: 30 ambient − 16 equations, and a dense Gaussian bilinear map has
-it too. Possessing a ZD variety distinguishes nothing and no claim should rest
-on it.
+independent implementations), of the same **total** dimension as S's. **The
+total's genericity was the wrong reason for dismissing it, though the
+dismissal itself survives (refined 2026-07-27, §12.3):** 30 ambient − 16
+equations gives 14 for any bilinear map, S included — but for S that 14
+decomposes as 11+3 (an 11-dimensional base, forced three independent ways —
+Reggiani's G₂ isometry, Koebisu's V₂(ℝ⁷) projection, BDI's exact
+multiple-of-4 annihilator bound — plus a 3-dimensional fiber), while a
+generic bilinear map decomposes as 14+0 (full-dimensional base, no fiber).
+Same total, opposite shape. Possessing a ZD variety of dimension 14 still
+distinguishes nothing on its own; the *shape* of that 14 does, and now has a
+direct numeric handle — see §12.3.
 
-**Implication for the X-inequivalence certificate:** dimension is not a
-discriminating invariant. Any certificate must rest on isometry type and
-homogeneity (Reggiani's G₂ result), never on a dimension count, which passes
-for random noise.
+**Implication for the X-inequivalence certificate:** total dimension is not
+a discriminating invariant. Any certificate must rest on isometry type and
+homogeneity (Reggiani's G₂ result) or on the shape of the decomposition
+(§12.3's annihilator-dimension result), never on a bare dimension count,
+which passes for random noise.
 
 **Verification footnote (Claude Code, 2026-07-27):** every qualitative claim
 in the table above is confirmed by independent recomputation from
@@ -528,10 +538,14 @@ paper (not fetched this pass).
 
 - **Blocking check: PASS, after one false start.** First attempt used
   `u,w = v[:8], v[8:]` (the full CD-doubling halves) and got a large
-  mismatch (eigenvalue error 0.64) — traced to the wrong split. The correct
-  split is the **imaginary** octonion halves, `u = v[1:8]`, `w = v[9:16]`
-  (dropping each half's real component). With that fix: eigenvalues of
-  `L_vᵀL_v` match the predicted `{1×8, (1+S)×4, (1−S)×4}` to 3.6e-15, and
+  mismatch (eigenvalue error 0.64) — traced to the wrong split, not to a
+  flaw in the derivation: **Koebisu Thm 3.9 fixes the component
+  convention** (`‖u‖² = Σ_{i=1..7} aᵢ², ⟨u,w⟩ = Σ_{i=1..7} aᵢaᵢ₊₈`, i.e.
+  `u,w` are the **imaginary** octonion halves, `u = v[1:8]`, `w = v[9:16]`,
+  dropping each half's real component), which the first attempt lacked.
+  Cite Thm 3.9 alongside Cor. 7.3 wherever this closed form is used. With
+  the correct split: eigenvalues of `L_vᵀL_v` match the predicted
+  `{1×8, (1+S)×4, (1−S)×4}` to 3.6e-15, and
   `cond(L_v) = √((1+S)/(1−S))` matches the SVD-computed condition number to
   9.4e-12, over 5000 random unit v. See §8.2 for the updated caveat.
 - **Item 2(a)** (`D₂ = ‖v‖⁴(1−S²)`, cross-check against Koebisu's det
@@ -570,7 +584,11 @@ paper (not fetched this pass).
   exceptions (theorem-fixed, as expected). X shows **16 distinct
   eigenvalues (no degeneracy at all) at 200/200** sampled points, all three
   grid seeds. A clean, non-overlapping binary discriminator — recommended
-  over rank-deficiency for Stage 0 (see chat exchange, item 5).
+  over rank-deficiency for Stage 0 (see chat exchange, item 5). **Caveat
+  carried into §12.2: this run sampled unit v from the free sphere
+  (`rng.normal`, unit-normalized), not real model activations, and did not
+  log full spectra — only multiplicity-partition counts. See §12.2 for the
+  real-init version.**
 - **Item 4(a) verified, with a correction of its own**: Koebisu
   (arXiv:2512.13002) and Biss–Dugger–Isaksen are indeed already in
   `PRIOR_ART_REVIEW_zda.md` §3 (confirmed at lines 188/190–192/476, not
@@ -590,7 +608,118 @@ paper (not fetched this pass).
   restart search. Stage 0 item 3's global-infimum check should be rescoped
   to X only, as chat side proposed.
 
+### 12.2 Third pass (2026-07-27, same day): real-init can't-vs-doesn't test
+
+Chat side asked whether Stage 0's can't-vs-doesn't question might already be
+answered from data on hand, via `(a)` were full spectra logged at item 5's
+200 points, `(b)` confirm the X-side operator is the plain Gram form (no
+conjugation), `(c)` compare the achievable floor against measured r² at the
+same P, `(d)` state the sampling distribution.
+
+**Answers:** `(a)` No — item 5's run only counted multiplicity-partition
+tuples and printed one illustrative spectrum per seed; nothing was logged
+to a file, and no run paired a spectrum with a measured r². `(b)` Confirmed
+— every eigendecomposition in this pass (S and X alike) used the plain Gram
+matrix `L_vᵀL_v` via a bare `torch.einsum`/`numpy.einsum` contraction, no
+conjugation anywhere; this is valid for any bilinear map, including the
+non-algebra shuffled tensor. `(c)`/`(d)` — not answerable from existing
+data (nothing on disk pairs a floor with a measured r²), **but cheaply
+answerable without a restart search or checkpoints**, so ran it fresh:
+reused the exact real-init methodology from Stage 0 item 2's N2 check
+(`phase4_init_r2_check.py` — real `K3Attention`, real `wq`/`wk`, real
+`R_8` rotation, real grid dims d_model=384/heads=6/ctx=256, fresh untrained
+weights, **not** free-sphere sampling — this is deliberate, since free
+sampling is already known from N2 to badly mispredict r² at real init,
+`RESULTS_phase4.md` §8.1 history). For 200 sampled causal query points per
+variant (5 inits × 40 points), computed both the achievable floor
+(min eigenvalue of `L_qᵀL_q` at the unit-normalized, *rotated* query — the
+same vector the real score actually uses) and the actual minimum r² among
+the real keys present at that position in the same batch:
+
+| variant | median actual min r² | median achievable floor | median ratio | frac within 2× of floor |
+|---|---|---|---|---|
+| S | 0.5575 | 0.2284 | 2.32× | 40.0% |
+| X seed1337 | 0.3747 | 0.0015 | 246× | 0.0% |
+| X seed1338 | 0.3787 | 0.0016 | 206× | 0.0% |
+| X seed1339 | 0.3653 | 0.0018 | 199× | 0.0% |
+
+**At fresh, untrained init**, S's real queries already land within a
+factor of ~2 of their theoretical best against the keys actually present
+40% of the time — random projection alone gets respectably close. X's
+achievable floor is ~100–150× lower than S's (consistent with the
+~450–500× free-sphere accessibility gap already on record), **but the
+actual keys present come nowhere near it — 0/200 within even 2× of the
+floor, every seed**, and the *actual* r² achieved is comparable in
+magnitude to S's (0.37–0.38 vs 0.56), not anywhere near X's much lower
+floor.
+
+**Reading, with the caveat stated plainly:** this is an **init-time**
+result — fresh random weights, no training, no gradient signal — so it
+does not by itself settle whether *training* declined an available
+descent (the genuinely blocked "local" question, §10, still needs the
+Drive-only checkpoints). What it does establish: X's dramatically more
+accessible floor is not something random projections stumble into by
+chance either — reaching it, if it happens at all, would have to be
+something training actively finds, not a free byproduct of initialization
+the way S's much smaller floor advantage partly is. This sharpens the
+"doesn't" reading (§8.1's non-monotonic, flat-after-one-move X trajectory)
+without resolving can't-vs-doesn't outright, and it was obtained without
+the restart search chat side asked to hold off on.
+
+### 12.3 Fourth pass (2026-07-27, same day): source documents received;
+annihilator dimension confirmed as a second S-vs-X discriminator
+
+`PRIOR_ART_addendum_2026-07-27.md` (rev. B) and `EIGENTHEORY_findings_2026-07-27.md`
+arrived after §12.2 was written (receipt confirmed by reading both in full).
+Everything in them that overlaps §12.1/§12.2 matches exactly — same `S(v)`
+formula, same eigenvalue theorem, same `r²_min` Rayleigh-quotient result, same
+recommendation to supersede rank-deficiency with the multiplicity signature.
+Two genuinely new, independently-checkable claims, both verified:
+
+- **Koebisu Thm 3.9 fixes the component convention** that cost the §12.1
+  false start (`u,w` as the imaginary octonion halves) — already folded into
+  §12.1 and the addendum in `SESSION_CONTINUATION_HANDOFF_2026-07-26.md`
+  §3.4.
+- **Exact-zero-divisor spectrum collapse (BCDI Prop. 7.4).** At an exact
+  zero divisor, the spectrum should collapse to `{0×4, 1×8, 2×4}`.
+  **Confirmed at 20 distinct exact zero-divisor elements of S** (`e_i±e_j`
+  pairs, `structure_tensor()`), spectrum exact at every one — not a bound,
+  realized exactly, every time.
+- **Annihilator dimension as a Stage-0 discriminator (`PRIOR_ART_addendum`
+  §4/§7).** For S this is now a proved fact (4, from the theorem, confirmed
+  above). **For X: measured directly** — found near-zero-divisor points for
+  all three grid seeds via Adam optimization (σ_min ≈ 1e-16, essentially
+  exact), then read off the null-eigenspace dimension at each: **exactly 1,
+  every seed**, next-smallest eigenvalue clearing zero by 0.012–0.019 with
+  no ambiguity at any tolerance from 1e-3 to 1e-6. Matches the "generic
+  bilinear map" prediction exactly. **A second, independent binary
+  discriminator: S's annihilator is 4-dimensional, X's is 1-dimensional,
+  both confirmed by direct measurement, not assumption.**
+
+**One claim not independently re-derived**: `PRIOR_ART_addendum` §3.2's
+`V₂(ℝ⁷) ≅ G₂/SU(2)` step (the G₂→S⁶→SU(3)→S⁵→SU(2) transitivity chain).
+This is standard octonion/G₂ Lie theory (G₂ = Aut(𝕆) acts transitively on
+unit imaginary octonions with stabilizer SU(3); SU(3) acts transitively on
+unit vectors orthogonal to a fixed one with stabilizer SU(2)) and is
+consistent with everything measured this pass (dimensionally: 11 = 14−3,
+confirmed independently in §12.1 item 2(c) before this document arrived),
+but it was affirmed from general mathematical knowledge, not re-derived from
+BCDI/Koebisu's own text or independently proven here. Flagged, not treated
+as repo-verified in the same sense as the numeric results above.
+
+**Applied to the repo:** `PRIOR_ART_REVIEW_zda.md` §3 expanded with the BCDI
+eigentheory paper (previously entirely absent) and Koebisu upgraded from
+abstract-level to content-level citation, per the addendum's own diagnosis
+that this was a citation-reading failure, not a search-coverage gap; new
+§3.1(d) records the dimension-14 decomposition and both discriminators;
+§8.4.7 gained item 4 recording the abstract-level-citation failure mode
+itself. §8.2 above reframed: dismissing "dimension 14" as a discriminator
+was the right call for the wrong reason: the shape (11+3 vs 14+0) is *not*
+generic and now has a direct numeric handle in the annihilator dimension.
+
 **Net: two corrections (§6.1, §8.1), one caveat (§8.2), everything else in
-§3–§5, §7, and §8.3 exact.** The document's headline claims (H4a negative,
-H4c pass, the S–X double dissociation, wall-clock exceeding its bound) are
-all unaffected by the corrections.
+§3–§5, §7, and §8.3 exact — plus two new independently-confirmed
+discriminators (eigenvalue multiplicity signature, annihilator dimension)
+that did not exist in the original draft.** The document's headline claims
+(H4a negative, H4c pass, the S–X double dissociation, wall-clock exceeding
+its bound) are unaffected by any of this.
