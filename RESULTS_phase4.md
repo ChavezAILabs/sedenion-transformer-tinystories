@@ -80,7 +80,11 @@ seconds. **The structure tensor is the only difference between them.**
 | Q0 | 3 | 1.8211 ± 0.0079 | 20.54 | 45.88 | 0.00e+00 | 0.54 |
 
 No run diverged. D0 is reference only and Q0 is the no-interaction floor;
-neither is graded.
+neither is graded. **`k1 min` is an init-time statistic, not a trained
+one** — `k1_row_spread` increases monotonically enough that its
+minimum-over-the-entire-run equals the step-0 value in all 6 real runs
+(verified directly against `p4_artifacts/*/eval_log.jsonl`; see §12.4(ii)),
+so this column carries no information about the trained model.
 
 ---
 
@@ -433,9 +437,19 @@ literature counts.*
 3. **Both tensor variants are worse language models than every dense baseline.**
    The dissociation is between S and its own control, not against a competitive
    baseline.
-4. **Can't vs doesn't is unresolved.** Whether X *can* reach low r² under the
-   real parameterization was never measured. Two seeds converging near 0.033
-   suggested a floor; seed 1339's 0.02818 broke that reading. Open.
+4. **Can't vs doesn't — init-time question closed 2026-07-27/28, trained
+   question still open.** Whether X *can* reach low r² under the real
+   parameterization has now been measured at init (§12.2) and the reading
+   corrected by a matched-N random-key null control (§12.4): neither S nor
+   X's real untrained keys beat chance at finding a low-r² partner, so the
+   raw floor-proximity gap between them is target geometry (4-dim eigenspace
+   vs. 1-dim needle), not evidence of differential steering. **The trained
+   question — whether training itself finds what init-time random chance
+   doesn't — remains genuinely open**, blocked on the same ~3GB Drive-only
+   checkpoint sync as §10 row 1. Two seeds converging near 0.033 (trained
+   summary numbers) with seed 1339's 0.02818 breaking that reading is a
+   separate, still-unresolved observation about the *trained* end state,
+   unaffected by this init-time result.
 5. **Seed variance in the dense family is large** — D0p ppl@512 swings 46%
    between seeds — which sets a floor on readable margins for any dense
    comparison.
@@ -447,7 +461,7 @@ literature counts.*
 
 | item | cost | blocks | status |
 |---|---|---|---|
-| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **partially done** — global variant (fresh-init, many restarts) unblocked per `SESSION_CONTINUATION_HANDOFF_2026-07-26.md` §3.1, not yet run; local variant (from trained checkpoints) still blocked, no checkpoints synced locally |
+| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **init-time question closed** — S's global infimum is a closed-form theorem (`EIGENTHEORY_findings_2026-07-27.md` §5: min over unit Q of the model's r² = 1−S(P), not a search target); X's init-time accessibility was measured (§12.2) and the reading corrected by the matched-N null control (§12.4) — neither variant's real untrained keys beat chance, so the gap is target geometry, not steering. **Only the trained-checkpoint ("local") question remains blocked**, on the ~3GB Drive-only checkpoint sync — carried to Phase 5 item 1: rerun `phase4_matched_N_null.py` against a trained checkpoint once synced. |
 | cond(L_x) at the real init distribution | inference only | §8.2 attribution | **done** 2026-07-26 — confirmed real, not a sampling artifact (`PHASE5_stage0_findings_2026-07-26.md` §2); ~15× gap at real init matches the free-sphere prediction to ~1% |
 | ~~Verify §8.3 against repo enumerator~~ | minutes | prior-art §8.4.8 | **done** 2026-07-27, this pass — see §8.3 |
 | A3-revised γ dose-response | inference only, plausibly free tier | — | open |
@@ -723,3 +737,173 @@ discriminators (eigenvalue multiplicity signature, annihilator dimension)
 that did not exist in the original draft.** The document's headline claims
 (H4a negative, H4c pass, the S–X double dissociation, wall-clock exceeding
 its bound) are unaffected by any of this.
+
+### 12.4 Fifth pass (2026-07-27/28): matched-N random-key null (the
+blocking item), plus two carried-question resolutions
+
+Three items carried from the previous session's handoff, addressed in
+order.
+
+**(i) X-side operator confirmation.** Re-confirmed: §12.2(b) already
+established that every eigendecomposition in this pass (S and X alike)
+uses the plain Gram matrix `L_vᵀL_v` (a bare `einsum` contraction, no
+conjugation anywhere). This is required for X specifically because BCDI's
+`M_a := (1/‖a‖²)L_{a*}L_a` presupposes an algebra with a conjugation, and
+the shuffled tensor is not one — the plain Gram form (squared singular
+values of `L_v`) is the only operator that transfers. No new work needed;
+restated here for the record since the question recurred.
+
+**(ii) Grand-summary `k1 min` is not the same quantity as the r²/eigenvalue
+work, and there is no training-driven reversal.** The handoff asked
+whether `k1 min` (grand summary §3: S=1.33, X=2.42, described there as
+"trained") is the same quantity/normalization as the cond(L_v)/r²-floor
+work, since if so, "at init X is lower than S" while the trained figures
+show S<X would be a genuine dynamic reversal worth writing up. Checked
+directly against `p4_artifacts/*/eval_log.jsonl` (real logged data, not a
+rerun): `k1_row_spread` is the per-eval **minimum-over-layers** of the
+maximum absolute difference between raw attention-score rows at different
+query positions against a shared causal key window (`phase4_train.py`
+lines 105–110) — a K1-degeneracy liveness guard measured in raw-logit
+units, not the algebraic Rayleigh-quotient/eigenvalue quantities of §12.1–
+§12.3. It is a different object by construction, not merely a different
+normalization of the same one.
+
+Directly checked all 6 real runs' full eval trajectories: for **every
+one** (S and X, all 3 seeds), the global minimum of `k1_row_spread` over
+the *entire* training run occurs at **step 0**, not at the end:
+
+| run | step-0 (=min) | step-end (max) |
+|---|---|---|
+| S seed1337/1338/1339 | 1.3426 / 1.3316 / 1.3309 | 2.8436 / 2.8989 / 3.1617 |
+| X seed1337/1338/1339 | 2.7031 / 2.6189 / 2.4202 | 5.6101 / 5.4492 / 5.8030 |
+
+`k1_row_spread` **increases** over training for both variants (min always
+at init, max always at the end) — the opposite of monotonically
+decreasing, so `k1_guard_min` (`min over all evals`, per `phase4_grid.py`
+line 714) always equals the init value in every one of these 6 runs, and
+the grand-summary table's "k1 min" column (S=1.33, X=2.42, matching
+seed1339's init value for each) **is an init-time statistic, not a
+trained/end-of-run one** — the "(trained)" label in the handoff's framing
+of the question was incorrect. There is consequently **no dynamic
+reversal to report**: at init, X's `k1_row_spread` (2.42–2.70) is already
+*higher* than S's (1.33–1.34), matching the grand-summary ordering
+exactly, not lower. The "at init X is lower than S" premise instead
+describes a *different* quantity — the r²-floor numbers in §12.2, where
+X's achievable floor (0.0012–0.0022) genuinely is far lower than S's
+(0.207–0.228) — and conflating the two was the source of the apparent
+puzzle. No write-up change needed to the grand summary; flagging this
+here so the conflation doesn't recur.
+
+**(iii) median-of-ratios vs ratio-of-medians, resolved retroactively for
+§12.2 without needing the lost per-point data.** §12.2's script was not
+saved to the repo, so its exact "median ratio" column (S: 2.32×) can't be
+recomputed directly from raw per-point values. But it can be checked for
+internal consistency: `ratio_of_medians` from the two medians §12.2
+itself reports is `0.5575 / 0.2284 = 2.44`, not the `2.32` printed in the
+table. Since these disagree, **§12.2's "median ratio" column must have
+been `median_of_ratios` (median taken per-point, before aggregating), not
+`ratio_of_medians`** — an internal check that resolves the ambiguity
+without the original script. Going forward (this pass and any rerun),
+both conventions are logged explicitly (see table below) rather than a
+single ambiguous "ratio" column.
+
+**The blocking item: matched-N random-key null control.** New script
+`phase4_matched_N_null.py`, same real-init methodology as §12.2 (real
+`K3Attention`, real `wq`/`wk`, real `R_8` rotation, real grid dims
+d_model=384/n_heads=6/ctx=256, fresh untrained weights, 5 inits × 40
+causal query points = 200 points/variant). At each sampled point `P`, in
+addition to the real min r² among the `N` real keys present at that
+causal position (`N` = position+1) and the closed-form achievable floor,
+drew `N` freshly-sampled random unit keys (100 repeated trials per point,
+median taken) and computed `ratio_null = actual_min_r² / random_N_min_r²`
+— matched-N so a thin target isn't penalized just for being hard for
+*anyone*, real or random, to hit:
+
+| variant | median actual | median floor | median random-N-min | ratio_of_medians | median_of_ratios |
+|---|---|---|---|---|---|
+| S | 0.5617 | 0.2071 | 0.5358 | 1.048 | 1.002 |
+| X seed1337 | 0.3649 | 0.0022 | 0.3678 | 0.992 | 1.001 |
+| X seed1338 | 0.3753 | 0.0012 | 0.3731 | 1.006 | 0.993 |
+| X seed1339 | 0.3624 | 0.0018 | 0.3680 | 0.985 | 0.996 |
+
+Every variant, every seed: `ratio_null ≈ 1` (0.98–1.05 both conventions),
+and 99.0–100% of individual points fall within [0.5×, 2×] of the matched-N
+null. **Applying the pre-specified three-way decision rule: both S and X
+land in the "both ≈ 1" branch — neither variant's real (untrained, freshly
+projected/rotated) keys beat chance at finding a low-r² partner, relative
+to N random draws matched for the same N.**
+
+**This means §12.2's headline framing needs a correction, not to its
+numbers but to what they were read as showing.** S landing near its floor
+40% of the time while X lands near its floor 0% of the time is **not**
+evidence that S's real keys are "steered" toward low r² more than chance
+— matched-N random draws land just as close to S's floor as S's real keys
+do (median random-N-min 0.536 vs actual 0.562), and just as far from X's
+floor as X's real keys do (median random-N-min 0.368–0.373 vs actual
+0.362–0.375). The entire §12.2 gap is explained by **target width alone**:
+S's floor sits on a 4-dimensional eigenspace (BCDI multiplicity-4
+annihilator direction), reachable by chance a meaningful fraction of the
+time; X's sits on a ~1-dimensional needle (measured annihilator dimension
+1), unreachable by chance regardless of any steering effect on either
+side. At **fresh random init**, this is exactly the expected result —
+`wq`/`wk` are literally untrained random projections, so "real" keys and
+random unit draws should behave identically until training does
+something with them, and this control confirms they do.
+
+**Consequence for the can't-vs-doesn't question (§3.1/§10):** §12.2's
+closing line ("sharpens the 'doesn't' reading... without resolving
+can't-vs-doesn't outright") **overclaimed** — corrected here, not
+struck through. The init-time floor-proximity gap does not sharpen
+"doesn't" at all once the matched-N null is controlled for; it is fully
+explained by geometry. **The only evidence actually on record for
+"doesn't" remains Stage 0 item 1's *training-dynamics* finding**
+(`PHASE5_stage0_findings_2026-07-26.md` §1: X's log-slope goes flat after
+one early move while S sustains negative log-slope through nearly the
+whole 18,311-step run) — a genuinely dynamic, trained-model result,
+untouched by this correction. The checkpoint-dependent "local" question
+(§10, still blocked on the ~3GB Drive-only checkpoints) remains the only
+way to test whether *trained* keys show the steering this init-time
+control finds absent at step 0.
+
+**Floor discrepancy, §12.2 vs §12.4, diagnosed.** S's median achievable
+floor moved 0.2284 (§12.2) → 0.2071 (§12.4, +9.3% relative), while median
+actual min r² barely moved (0.5575 → 0.5617, +0.75%) — asymmetric, so not
+generic sampling noise across the board. Checked in the specified order:
+
+- **(a) Unit-normalization.** `achievable_floor` is *not* pre-normalizing
+  `P`; it divides by `‖P‖²` inside the Gram matrix (`M = AᵀA/‖P‖²`). Tested
+  directly: `achievable_floor(T,P)` vs `achievable_floor(T,P/‖P‖)` over 500
+  random-scale draws — identical to 1.2e-12. Normalization is handled
+  correctly; not the source.
+- **(b) Same 5 inits?** Yes — `torch.manual_seed(1000+init_seed)` for
+  `init_seed in range(5)`, identical convention to `phase4_init_r2_check.py`
+  (which §12.2 states it reused) and to `phase4_matched_N_null.py`. Same
+  grid dims (384/6/256) mean the model weights and the input batch `x` are
+  bit-identical draws across all three scripts for each init. Not the
+  source.
+- **(c) Theory tiebreak.** `achievable_floor`'s eigenvalue computation
+  matches the closed-form `1−S(P)` (`EIGENTHEORY_findings_2026-07-27.md`
+  §2.1) to **4.5e-12** over 500 synthetic vectors and **1.9e-7** over 200
+  real rotated query vectors — the formula is correct, gated exactly as
+  specified, ruling out a math error in either script's floor computation.
+
+**Actual source: point-sampling variance, not a bug.** `S(P)` (hence the
+floor) depends on which specific query direction gets sampled and is far
+more sensitive to the exact 200 points drawn than the "actual min r²"
+statistic is (that one aggregates over many real keys per point, damping
+point-to-point variation; the floor is a single number per point with no
+such averaging). Confirmed directly: resampling with a "clean" point-only
+RNG stream (no interleaved random-null-trial draws consuming the stream
+first, unlike `phase4_matched_N_null.py`'s `run_variant`, which interleaves
+100 null-trial draws per point between successive `sample_points` calls)
+gives median floor **0.2238** — 2% from §12.2's 0.2284, not 9%. The
+interleaving pattern in `phase4_matched_N_null.py` is not a bug (every
+draw is still a valid, independently-sampled query point), but it does
+mean that script's specific 200-point sample lands further from §12.2's
+than a fresh resample would. **Net: both scripts' floor figures are
+correct Monte Carlo estimates of the same underlying quantity; they differ
+because 200 points is not enough to pin the median of `S(P)`'s
+distribution tighter than roughly this range.** Does not affect anything
+load-bearing: `ratio_null` never uses the floor value, and the 4-dim-vs-
+1-dim geometric argument is a structural fact (BCDI/annihilator-dimension
+theorems), not a Monte Carlo estimate.

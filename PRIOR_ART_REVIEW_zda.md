@@ -250,9 +250,29 @@ the generic-bilinear-map count. For S specifically the 14 is not an
 undifferentiated total — it decomposes as **11 + 3**, forced three
 independent ways: Reggiani (𝒵(𝕊) ≅ G₂, dim 14); Koebisu Thm 4.2 (the
 first-factor projection's image is V₂(ℝ⁷), dim 2·7−3 = 11, via the
-G₂→S⁶→SU(3)→S⁵→SU(2) transitivity chain — not independently re-derived
-here, standard octonion/G₂ Lie theory, plausible but unverified against
-source); BDI Prop. 3.20/7.4 (every eigenspace, hence every annihilator, is a
+G₂→S⁶→SU(3)→S⁵→SU(2) transitivity chain).
+
+**Flag upgraded, 2026-07-28** (was: "not independently re-derived here,
+standard octonion/G₂ Lie theory, plausible but unverified against
+source"): fetched Koebisu (arXiv:2512.13002v2, HTML rendition) directly
+and read Lemma 3.6 in full, rather than continuing to carry the whole
+chain as an unchecked assertion. **Two of the three steps are in the
+paper's own proof, verbatim**: "Since `G₂` acts transitively on the unit
+sphere in `Im(𝕆)`, there exists `g₁∈G₂` with `g₁u=‖u‖e₁`" (G₂ on S⁶) and
+"The stabilizer of `e₁` in `G₂` is isomorphic to `SU(3)`, and its action
+on `e₁⊥≅ℝ⁶` is transitive on the unit sphere" (SU(3) on S⁵) — both
+sourced, not assumed. **The proof does not address the third step**
+(SU(3)'s own stabilizer on that S⁵, i.e. that it is SU(2)) — checked by
+direct read, that sentence simply isn't there. That last step is standard
+representation theory independent of this paper (SU(n) acts transitively
+on S^{2n−1}⊂ℂⁿ with point-stabilizer SU(n−1); n=3 gives stabilizer SU(2)
+on S⁵) and is not attributed to Koebisu. **Net: the flag narrows from
+"whole chain unverified" to "2 of 3 steps repo-verified against source,
+the third is a standard fact outside this paper's scope, correctly
+unclaimed by it."**
+
+The third leg of the three-way count stands independently of the above:
+BDI Prop. 3.20/7.4 (every eigenspace, hence every annihilator, is a
 multiple of 4 — realized exactly at 4, not just bounded by it, confirmed
 below). A generic bilinear map's normalized pair variety instead decomposes
 as **14 + 0**: full-dimensional base, zero-dimensional (generic,
