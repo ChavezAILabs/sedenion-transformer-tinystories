@@ -437,19 +437,23 @@ literature counts.*
 3. **Both tensor variants are worse language models than every dense baseline.**
    The dissociation is between S and its own control, not against a competitive
    baseline.
-4. **Can't vs doesn't — init-time question closed 2026-07-27/28, trained
-   question still open.** Whether X *can* reach low r² under the real
-   parameterization has now been measured at init (§12.2) and the reading
-   corrected by a matched-N random-key null control (§12.4): neither S nor
-   X's real untrained keys beat chance at finding a low-r² partner, so the
-   raw floor-proximity gap between them is target geometry (4-dim eigenspace
-   vs. 1-dim needle), not evidence of differential steering. **The trained
-   question — whether training itself finds what init-time random chance
-   doesn't — remains genuinely open**, blocked on the same ~3GB Drive-only
-   checkpoint sync as §10 row 1. Two seeds converging near 0.033 (trained
-   summary numbers) with seed 1339's 0.02818 breaking that reading is a
-   separate, still-unresolved observation about the *trained* end state,
-   unaffected by this init-time result.
+4. **Can't vs doesn't — closed, both init and trained (2026-07-29, §12.5).**
+   Whether X *can* reach low r² under the real parameterization was measured
+   at init (§12.2) and corrected by a matched-N null control (§12.4): neither
+   S nor X's real untrained keys beat chance, so the raw floor-proximity gap
+   between them is target geometry (4-dim eigenspace vs. 1-dim needle), not
+   steering. **The trained question is now answered too**, against real
+   TinyStories val batches and the actual trained checkpoints (Drive access
+   set up 2026-07-28/29): **S's real trained keys land far closer to the
+   floor than matched-N chance, robustly across all three seeds and stable
+   or strengthening across the full N range (pooled median percentile 0.03,
+   z≈−25 vs. the uniform null) — a genuine, behavioral steering effect, not
+   a small-N artifact.** X shows a much smaller, N-concentrated effect
+   (strongest at small N, fading toward null-consistent by the top N
+   quartile — the signature of noise/artifact, not population-level
+   steering) — see §12.5 for the full breakdown and the one honest surprise
+   this run turned up (a real but *smaller* anti-chance skew for **S at
+   init too**, unexplained, flagged not buried).
 5. **Seed variance in the dense family is large** — D0p ppl@512 swings 46%
    between seeds — which sets a floor on readable margins for any dense
    comparison.
@@ -461,7 +465,7 @@ literature counts.*
 
 | item | cost | blocks | status |
 |---|---|---|---|
-| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **init-time question closed** — S's global infimum is a closed-form theorem (`EIGENTHEORY_findings_2026-07-27.md` §5: min over unit Q of the model's r² = 1−S(P), not a search target); X's init-time accessibility was measured (§12.2) and the reading corrected by the matched-N null control (§12.4) — neither variant's real untrained keys beat chance, so the gap is target geometry, not steering. **Only the trained-checkpoint ("local") question remains blocked**, on the ~3GB Drive-only checkpoint sync — carried to Phase 5 item 1: rerun `phase4_matched_N_null.py` against a trained checkpoint once synced. |
+| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **CLOSED, both init and trained (2026-07-29)** — S's global infimum is a closed-form theorem (`EIGENTHEORY_findings_2026-07-27.md` §5); X's init-time accessibility was measured (§12.2) and null-corrected (§12.4) — neither variant beats chance untrained. **Trained-checkpoint question answered in §12.5**: real Drive-synced checkpoints (`paul@venicedispatch.info` account) + real TinyStories val batches, layer 0 — S's trained keys land far closer to the floor than matched-N chance (robust across seeds and N); X shows a much weaker, small-N-concentrated effect consistent with noise rather than population-level steering. Trajectory (early/mid/late) checked and found unavailable — `phase4_grid.py` only ever kept a single rolling final checkpoint, no intermediates exist on Drive for any S/X run. |
 | cond(L_x) at the real init distribution | inference only | §8.2 attribution | **done** 2026-07-26 — confirmed real, not a sampling artifact (`PHASE5_stage0_findings_2026-07-26.md` §2); ~15× gap at real init matches the free-sphere prediction to ~1% |
 | ~~Verify §8.3 against repo enumerator~~ | minutes | prior-art §8.4.8 | **done** 2026-07-27, this pass — see §8.3 |
 | A3-revised γ dose-response | inference only, plausibly free tier | — | open |
@@ -907,3 +911,171 @@ distribution tighter than roughly this range.** Does not affect anything
 load-bearing: `ratio_null` never uses the floor value, and the 4-dim-vs-
 1-dim geometric argument is a structural fact (BCDI/annihilator-dimension
 theorems), not a Monte Carlo estimate.
+
+### 12.5 Sixth pass (2026-07-28/29): matched-N null against real
+TinyStories batches AND trained checkpoints — Phase 5 item 1 resolved
+
+Drive access to the actual grid checkpoints was set up this session (they
+turned out to live under a second Google account, `paul@venicedispatch.info`,
+not the one already mounted locally — `MyDrive/p4_runs_ts/` and the matching
+tokenized data cache `MyDrive/zda_data_cache/`, both synced locally to
+`p4_checkpoints/` and `p4_val_data/`, gitignored). New script
+`phase4_matched_N_trained.py` supersedes `phase4_matched_N_null.py`'s
+methodology outright, per five chat-side specification items, checked
+before building rather than assumed:
+
+**1. Input: real data, not `torch.randn`.** Checked first, as required: both
+§12.2 and §12.4 used synthetic Gaussian input, not real TinyStories
+batches — trained `wq`/`wk` on synthetic input answers a question about a
+distribution training never touched. **Not comparable as-is.** Fixed by
+rebuilding *both* the init and trained conditions on the identical real-data
+pipeline (`TokenDataset` over `p4_val_data/val.bin`, the same class
+`phase4_grid.py` trains against) — so this pass's `init` numbers supersede
+§12.2/§12.4's for comparability, not just an addition alongside them.
+
+**2. Norm-matched null.** Checked analytically and numerically before
+deciding whether to change the null construction: the model's own
+`r2 = ‖P⊛Q‖²/(‖P‖²‖Q‖²)` (`phase4_layers.py`'s actual score formula) is
+**exactly scale-invariant in `‖Q‖`** (and `‖P‖`) by construction — verified
+to 1.9e-10 relative difference under 0.01×–100× rescaling of `Q`. Drawing
+null keys as unit vectors therefore introduces no bias relative to real
+(non-unit) keys regardless of norm drift; no renormalization was needed.
+Per the spec's own fallback ("log the key-norm distribution... if S and X
+differ substantially, that is a finding on its own") — they do: pooled
+across 3 seeds, key norms grow from init to trained by **+5.2% for S**
+(median 2.245→2.362) vs. **+13.9% for X** (median 2.237→2.550), a real,
+∼2.7× larger relative drift for X. Confirmed inert to the r² metric itself,
+reported as a standalone descriptive fact.
+
+**3. Stratified by N-quartile, not pooled** — see the table below.
+
+**4. Trajectory (early/mid/late checkpoints) — checked, unavailable.**
+`phase4_grid.py`'s checkpoint save (`save_ckpt_atomic`) writes a single
+rolling `ckpt_last.pt` at every eval, overwritten each time, saved as the
+final `ckpt.pt` at completion. Confirmed against Drive directly: every
+`p4_runs_ts/{variant}_seed{seed}/` has exactly one `ckpt.pt`; the only
+other checkpoint anywhere (`p4_runs_archive/D0p_seed1339_partial_20260722`)
+is an unrelated variant's crash-recovery snapshot. **No intermediate
+trajectory is recoverable for S or X, at any seed.** Not fabricated or
+substituted — flagged as a real limit on what this pass can settle (see
+"what this does and doesn't resolve" below).
+
+**5. Empirical percentile readout**, alongside both ratio conventions
+(§12.4(iii)): for each point, the fraction of its own 100 matched-N null
+trials at least as low as the actual real-key minimum. Under no steering
+this is Uniform(0,1); low values mean real keys beat chance (steering
+toward low r²), high values mean real keys land worse than chance.
+
+**Layer 0 only** (matches every other headline number in this project —
+the r²_min@0/@end table, PHASE5_stage0's early-lock trajectory, most of
+H4c's descending heads). Checkpoint loading verified exactly: loaded
+`wq.weight` matches the raw checkpoint tensor to 0.0 absolute difference;
+a fresh untrained init differs from it by 0.15 max absolute difference —
+confirms the "trained" condition is really trained, not silently falling
+back to a fresh init on a load failure.
+
+**Pooled results (3 seeds × 200 points = 600 per condition):**
+
+| condition | median ratio | mean percentile | median percentile | z vs. uniform(0.5)† |
+|---|---|---|---|---|
+| init S | 1.045 | 0.621 | 0.670 | +10.3 |
+| init X | 1.018 | 0.530 | 0.540 | +2.5 |
+| trained S | 0.653 | 0.210 | 0.030 | −24.6 |
+| trained X | 0.940 | 0.428 | 0.370 | −6.1 |
+
+† treats the 600 points as independent for a rough z-gauge — they aren't
+fully (points share batches/models), so this **overstates formal
+significance** and should be read as a descriptive signal-strength ranking,
+not a validated p-value.
+
+**N-quartile breakdown (pooled 3 seeds) — this is where item 3 earns its
+keep:**
+
+| condition | Nq1 (N≈1–63) | Nq2 (N≈64–129) | Nq3 (N≈130–193) | Nq4 (N≈194–256) |
+|---|---|---|---|---|
+| trained S, median ratio | 0.687 | 0.703 | 0.626 | **0.598** |
+| trained S, median pct | 0.06 | 0.03 | 0.02 | **0.02** |
+| trained X, median ratio | 0.878 | 0.963 | 0.947 | 0.962 |
+| trained X, median pct | **0.31** | 0.43 | 0.37 | 0.44 |
+
+**S's effect is flat-to-strengthening across the entire N range** — if
+anything the median ratio gets *more* extreme at high N (0.687→0.598), the
+opposite of the "min-over-N mechanically converges to the floor for
+everyone as N grows" artifact the spec warned to check for. That pattern
+(surviving, not eroding, as the search space widens) is the signature of a
+real population-level effect: many of S's real keys are landing near the
+manifold, not just one lucky one at small N. **X's effect runs the other
+way** — strongest (median pct 0.31) at the smallest N, where a single
+favorable draw among few keys has the most leverage, and fades toward
+null-consistent (0.37–0.44) at every larger N-quartile. That is close to
+the textbook signature of a small-N artifact rather than a robust,
+population-wide steering signal.
+
+**Applying the pre-registered decision rule to the pooled numbers, then
+reading the stratified breakdown as the tie-breaker it was built for:**
+taken literally, trained S (0.653) is clearly `< 1` and trained X (0.940)
+is not exactly `≈ 1` either — so the pooled numbers alone sit in the third
+branch, "both < 1, compare magnitudes," not the second. But the
+N-stratified pattern above is exactly the diagnostic the spec asked for to
+distinguish those branches: S's deviation is N-independent (behavioral),
+X's is concentrated at small N and decays toward the null as N grows (the
+profile of an artifact). **Reading: S steers, robustly and by a large
+margin; X's small pooled deviation is better explained as a small-N
+artifact than genuine population-level steering — closer in spirit to
+"doesn't" than to "both steer comparably," but not the clean `X ≈ 1`
+the rule's second branch describes at face value.** This nuance is
+reported rather than forced into one branch label, per the rule's own
+"compare magnitudes" instruction for exactly this kind of in-between case.
+
+**Chat-side prediction, recorded before the run: "S below 1, X near 1 —
+the 'doesn't survives' branch. Moderate confidence."** Substantially
+correct in direction and in the size gap between S and X (S's effect is
+roughly 4× X's in z-magnitude, 9× in how far the median percentile sits
+from 0.5), less clean than "X near 1" stated flatly — X's pooled number
+(0.940, z≈−6) is a real, non-trivial deviation on its own, and only the
+N-stratification clarifies why it likely isn't the same kind of effect as
+S's. The recorded "live alternative" ("both near 1 even trained... H4c's
+descent doesn't translate into keys landing nearer the floor than chance")
+is not what happened for S (S's shift is enormous, not near 1) but is
+closer to what happened for X.
+
+**One honest surprise, flagged rather than smoothed over: `init S` is not
+a clean `≈1` calibration point.** Its pooled z is +10.3 (median percentile
+0.67) — real keys at *untrained* init land *worse* than matched-N chance
+for S specifically, a moderate but statistically non-trivial skew in the
+opposite direction from the trained effect. `init X`'s skew is much
+weaker (z=+2.5). This did not show up in §12.4's synthetic-input run
+(ratios there were 0.98–1.05 for both variants) or in this run's own
+pooled *ratio* numbers (1.045, 1.018 — unremarkable on their own), only in
+the percentile readout, which is more sensitive by construction. Plausible
+explanation, not confirmed: real (non-isotropic) token-embedding
+statistics passed through a fixed random projection don't resemble
+free-sphere sampling even at init — a mechanism this project already has
+independent evidence for (`phase4_init_r2_check.py`'s original finding
+that real q,k at init don't match free-sphere predictions). **This is why
+the before/after-training delta, not the absolute distance from `≈1` or
+`≈0.5`, is the safer comparison**: S moves from percentile 0.67 (init) to
+0.03 (trained) — an enormous swing regardless of where its own null
+baseline sits — while X moves from 0.54 to 0.37, real but far smaller.
+Not chased further this pass; flagged as an open question rather than
+either dismissed or overinterpreted.
+
+**What this does and doesn't resolve.** It answers the "trained" half of
+can't-vs-doesn't for the *final* state: S's trained keys clearly beat
+chance at finding low-r² partners; X's, at most, weakly and in a pattern
+more consistent with small-N noise than real steering. **It does not
+distinguish "X steered early (Stage 0 item 1's flat-after-one-move log-
+slope) and then stopped" from "X never steered at all"** — that needs
+early/mid/late checkpoints, confirmed unavailable (item 4). What it does
+add to that question: if X had genuinely steered early and then plateaued,
+its *final* trained state should still show a clear, S-like steering
+signal (the achieved position wouldn't un-steer itself) — instead the
+final state shows almost none. That favors "X's early move was not
+real steering" over "X steered then stopped," without being a direct
+trajectory test.
+
+**Files**: `phase4_matched_N_trained.py` (script), `p4_matched_N_trained_results.npz`
+(raw per-point arrays, all 12 conditions), `p4_checkpoints/` and
+`p4_val_data/` (local copies of the Drive-synced checkpoints and tokenized
+val set, gitignored, re-fetchable from `MyDrive/p4_runs_ts` +
+`MyDrive/zda_data_cache` on the `paul@venicedispatch.info` Drive account).

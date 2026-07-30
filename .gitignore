@@ -16,5 +16,12 @@ runs/
 runs_*/
 zda_runs_ts/
 
+# Local copies pulled from Drive for phase4_matched_N_null trained-
+# checkpoint reruns (see RESULTS_phase4.md SS10/SS12.4) — large binaries,
+# not original content, re-fetchable from MyDrive/p4_runs_ts +
+# MyDrive/zda_data_cache on the paul@venicedispatch.info Drive account
+p4_checkpoints/
+p4_val_data/
+
 # Machine-local IDE/tool settings
 .claude/settings.local.json
