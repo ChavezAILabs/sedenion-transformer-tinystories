@@ -633,6 +633,9 @@ def train_one(cfg: P4Config, ds, tr: dict, run_dir: str, device: str,
     n_params = model.n_params()
     print(f"variant={cfg.variant} seed={cfg.seed} d_model={cfg.d_model} "
           f"mlp={cfg.mlp_hidden} params={n_params:,} device={device}")
+    model_cfg = {**tr, "d_model": cfg.d_model, "mlp_hidden": cfg.mlp_hidden,
+                 "n_layers": cfg.n_layers, "n_heads": cfg.n_heads,
+                 "ctx": cfg.ctx, "vocab_size": cfg.vocab_size}
 
     mode = "a" if resumed else "w"
     train_csv = open(os.path.join(run_dir, "train_log.csv"), mode, newline="")
@@ -676,6 +679,17 @@ def train_one(cfg: P4Config, ds, tr: dict, run_dir: str, device: str,
                     "opt": opt.state_dict(),
                     "rng": rng_state_dict(data_gen),
                     "elapsed_s": round(time.time() - t0, 1)})
+                # Retained per-eval snapshot (model weights only, ~53MB) --
+                # ckpt_last.pt above is overwritten every eval and deleted at
+                # completion, so without this, no intermediate checkpoint
+                # ever survives a run (blocked the Stage 0 trajectory
+                # question and the early-vs-never distinction; see
+                # PHASE5_stage0_findings_2026-07-26.md SS1 and
+                # RESULTS_phase4.md SS12.5 item 4).
+                save_ckpt_atomic(
+                    os.path.join(run_dir, f"ckpt_step{step:06d}.pt"),
+                    {"model": model.state_dict(), "step": step,
+                     "config": model_cfg, "variant": cfg.variant})
 
         if step == tr["steps"]:
             break
@@ -720,10 +734,7 @@ def train_one(cfg: P4Config, ds, tr: dict, run_dir: str, device: str,
              "val0": val0, "diverged": bool(diverged),
              "k1_guard_min": k1_min, "length_gen": lg,
              "wall_time_s": round(time.time() - t0, 1),
-             "config": {**tr, "d_model": cfg.d_model,
-                        "mlp_hidden": cfg.mlp_hidden,
-                        "n_layers": cfg.n_layers, "n_heads": cfg.n_heads,
-                        "ctx": cfg.ctx, "vocab_size": cfg.vocab_size}}
+             "config": model_cfg}
     with open(os.path.join(run_dir, "summary.json"), "w") as f:
         json.dump(final, f, indent=2)
     torch.save({"model": model.state_dict(), "config": final["config"],

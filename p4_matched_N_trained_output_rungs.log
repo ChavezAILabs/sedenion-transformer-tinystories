@@ -1,0 +1,252 @@
+=== Item 2: r2 scale-invariance verification ===
+  max relative diff under ||Q|| rescaling (0.01x-100x): 1.887e-10
+
+##### RUNG ctx=512 #####
+
+=== init S seed=1337 rung=512 ===
+  n points: 200  N range 1-511
+  key norms: median=2.2584 IQR=[1.9972, 2.5666]
+  IID NULL   ratio_of_medians=1.0730 median_of_ratios=1.0591 median_ratio_p5=1.3007 mean_pct=0.6450 median_pct=0.7233
+  CORR NULL  ratio_of_medians=1.0033 median_of_ratios=1.0000 mean_pct=0.4853 median_pct=0.5075
+  Nq1 (n= 50, N=[1,135]): iid_ratio=1.0417 iid_pct=0.6800  |  corr_ratio=1.0121 corr_pct=0.5500
+  Nq2 (n= 50, N=[140,267]): iid_ratio=1.0882 iid_pct=0.7850  |  corr_ratio=1.0159 corr_pct=0.5750
+  Nq3 (n= 50, N=[268,365]): iid_ratio=1.0647 iid_pct=0.7417  |  corr_ratio=1.0058 corr_pct=0.5275
+  Nq4 (n= 50, N=[381,511]): iid_ratio=1.0451 iid_pct=0.7183  |  corr_ratio=0.9810 corr_pct=0.4225
+
+=== init S seed=1338 rung=512 ===
+  n points: 200  N range 2-511
+  key norms: median=2.2576 IQR=[1.9972, 2.5605]
+  IID NULL   ratio_of_medians=1.0786 median_of_ratios=1.0558 median_ratio_p5=1.3056 mean_pct=0.6393 median_pct=0.6950
+  CORR NULL  ratio_of_medians=0.9987 median_of_ratios=0.9974 mean_pct=0.4836 median_pct=0.4800
+  Nq1 (n= 49, N=[2,114]): iid_ratio=1.0112 iid_pct=0.5367  |  corr_ratio=0.9845 corr_pct=0.4500
+  Nq2 (n= 51, N=[115,249]): iid_ratio=1.0435 iid_pct=0.6533  |  corr_ratio=0.9959 corr_pct=0.4500
+  Nq3 (n= 50, N=[253,391]): iid_ratio=1.0869 iid_pct=0.7917  |  corr_ratio=1.0004 corr_pct=0.5050
+  Nq4 (n= 50, N=[396,511]): iid_ratio=1.0643 iid_pct=0.7433  |  corr_ratio=0.9994 corr_pct=0.4900
+
+=== init S seed=1339 rung=512 ===
+  n points: 200  N range 3-512
+  key norms: median=2.2608 IQR=[1.9964, 2.5532]
+  IID NULL   ratio_of_medians=1.0423 median_of_ratios=1.0445 median_ratio_p5=1.2968 mean_pct=0.6361 median_pct=0.7000
+  CORR NULL  ratio_of_medians=0.9972 median_of_ratios=1.0000 mean_pct=0.4850 median_pct=0.4975
+  Nq1 (n= 50, N=[3,130]): iid_ratio=1.0196 iid_pct=0.5700  |  corr_ratio=0.9732 corr_pct=0.4350
+  Nq2 (n= 50, N=[134,263]): iid_ratio=1.0505 iid_pct=0.7000  |  corr_ratio=0.9994 corr_pct=0.4950
+  Nq3 (n= 50, N=[264,391]): iid_ratio=1.0487 iid_pct=0.7317  |  corr_ratio=1.0001 corr_pct=0.5175
+  Nq4 (n= 50, N=[392,512]): iid_ratio=1.0788 iid_pct=0.8500  |  corr_ratio=1.0143 corr_pct=0.5700
+
+=== init X seed=1337 rung=512 ===
+  n points: 200  N range 1-511
+  key norms: median=2.2430 IQR=[1.9525, 2.5756]
+  IID NULL   ratio_of_medians=1.0304 median_of_ratios=1.0156 median_ratio_p5=1.5144 mean_pct=0.5351 median_pct=0.5383
+  CORR NULL  ratio_of_medians=0.9722 median_of_ratios=0.9831 mean_pct=0.4760 median_pct=0.4500
+  Nq1 (n= 50, N=[1,135]): iid_ratio=1.0691 iid_pct=0.6500  |  corr_ratio=1.0306 corr_pct=0.5550
+  Nq2 (n= 50, N=[140,267]): iid_ratio=0.9663 iid_pct=0.4233  |  corr_ratio=0.9551 corr_pct=0.3625
+  Nq3 (n= 50, N=[268,365]): iid_ratio=1.0278 iid_pct=0.5733  |  corr_ratio=1.0024 corr_pct=0.5125
+  Nq4 (n= 50, N=[381,511]): iid_ratio=0.9845 iid_pct=0.4633  |  corr_ratio=0.9329 corr_pct=0.3700
+
+=== init X seed=1338 rung=512 ===
+  n points: 200  N range 2-511
+  key norms: median=2.2404 IQR=[1.9541, 2.5592]
+  IID NULL   ratio_of_medians=1.0286 median_of_ratios=0.9969 median_ratio_p5=1.4841 mean_pct=0.5129 median_pct=0.4967
+  CORR NULL  ratio_of_medians=0.9930 median_of_ratios=0.9798 mean_pct=0.4804 median_pct=0.4550
+  Nq1 (n= 49, N=[2,114]): iid_ratio=1.0286 iid_pct=0.5367  |  corr_ratio=0.9857 corr_pct=0.4550
+  Nq2 (n= 51, N=[115,249]): iid_ratio=1.0014 iid_pct=0.5033  |  corr_ratio=0.9962 corr_pct=0.4900
+  Nq3 (n= 50, N=[253,391]): iid_ratio=0.9575 iid_pct=0.4100  |  corr_ratio=0.9432 corr_pct=0.3425
+  Nq4 (n= 50, N=[396,511]): iid_ratio=1.0158 iid_pct=0.5417  |  corr_ratio=0.9817 corr_pct=0.4750
+
+=== init X seed=1339 rung=512 ===
+  n points: 200  N range 3-512
+  key norms: median=2.2471 IQR=[1.9576, 2.5604]
+  IID NULL   ratio_of_medians=1.0423 median_of_ratios=1.0407 median_ratio_p5=1.5296 mean_pct=0.5775 median_pct=0.5850
+  CORR NULL  ratio_of_medians=1.0001 median_of_ratios=0.9981 mean_pct=0.5191 median_pct=0.4975
+  Nq1 (n= 50, N=[3,130]): iid_ratio=0.9745 iid_pct=0.4600  |  corr_ratio=0.9569 corr_pct=0.4125
+  Nq2 (n= 50, N=[134,263]): iid_ratio=1.0327 iid_pct=0.5600  |  corr_ratio=1.0107 corr_pct=0.5200
+  Nq3 (n= 50, N=[264,391]): iid_ratio=1.0540 iid_pct=0.6067  |  corr_ratio=1.0162 corr_pct=0.5525
+  Nq4 (n= 50, N=[392,512]): iid_ratio=1.0960 iid_pct=0.7367  |  corr_ratio=1.0404 corr_pct=0.5925
+
+--- SANITY GATE (rung=512): init corr-matched median percentiles, S x3 seeds then X x3 seeds = ['0.508', '0.480', '0.497', '0.450', '0.455', '0.497'] (expect ~0.5 per SS12.5's validation at ctx=256; a large deviation here means the correlation-matched null does not transfer to ctx=512 and the trained numbers below are NOT trustworthy as-is) ---
+
+=== trained S seed=1337 rung=512 ===
+  n points: 200  N range 1-511
+  key norms: median=2.3599 IQR=[1.9209, 3.0589]
+  IID NULL   ratio_of_medians=0.6524 median_of_ratios=0.6635 median_ratio_p5=0.9714 mean_pct=0.1956 median_pct=0.0367
+  CORR NULL  ratio_of_medians=0.8762 median_of_ratios=1.0000 mean_pct=0.4064 median_pct=0.3550
+  Nq1 (n= 50, N=[1,135]): iid_ratio=0.5594 iid_pct=0.0133  |  corr_ratio=0.9897 corr_pct=0.2750
+  Nq2 (n= 50, N=[140,267]): iid_ratio=0.6049 iid_pct=0.0167  |  corr_ratio=1.0000 corr_pct=0.3925
+  Nq3 (n= 50, N=[268,365]): iid_ratio=0.7517 iid_pct=0.0800  |  corr_ratio=1.0000 corr_pct=0.2425
+  Nq4 (n= 50, N=[381,511]): iid_ratio=0.6795 iid_pct=0.0467  |  corr_ratio=1.0000 corr_pct=0.4050
+
+=== trained S seed=1338 rung=512 ===
+  n points: 200  N range 2-511
+  key norms: median=2.3936 IQR=[1.9137, 3.2223]
+  IID NULL   ratio_of_medians=0.7250 median_of_ratios=0.7023 median_ratio_p5=1.0195 mean_pct=0.2404 median_pct=0.0600
+  CORR NULL  ratio_of_medians=0.9689 median_of_ratios=1.0000 mean_pct=0.4788 median_pct=0.4850
+  Nq1 (n= 49, N=[2,114]): iid_ratio=0.7543 iid_pct=0.0967  |  corr_ratio=1.0000 corr_pct=0.3600
+  Nq2 (n= 51, N=[115,249]): iid_ratio=0.7730 iid_pct=0.0567  |  corr_ratio=1.0000 corr_pct=0.3950
+  Nq3 (n= 50, N=[253,391]): iid_ratio=0.7703 iid_pct=0.0783  |  corr_ratio=1.0000 corr_pct=0.5650
+  Nq4 (n= 50, N=[396,511]): iid_ratio=0.5429 iid_pct=0.0067  |  corr_ratio=1.0000 corr_pct=0.5225
+
+=== trained S seed=1339 rung=512 ===
+  n points: 200  N range 3-512
+  key norms: median=2.3445 IQR=[1.9190, 3.0983]
+  IID NULL   ratio_of_medians=0.6539 median_of_ratios=0.6427 median_ratio_p5=0.8893 mean_pct=0.2060 median_pct=0.0167
+  CORR NULL  ratio_of_medians=0.9071 median_of_ratios=1.0000 mean_pct=0.4523 median_pct=0.4350
+  Nq1 (n= 50, N=[3,130]): iid_ratio=0.5283 iid_pct=0.0033  |  corr_ratio=0.9984 corr_pct=0.3750
+  Nq2 (n= 50, N=[134,263]): iid_ratio=0.6601 iid_pct=0.0417  |  corr_ratio=1.0000 corr_pct=0.4475
+  Nq3 (n= 50, N=[264,391]): iid_ratio=0.7015 iid_pct=0.0417  |  corr_ratio=1.0000 corr_pct=0.4275
+  Nq4 (n= 50, N=[392,512]): iid_ratio=0.5491 iid_pct=0.0133  |  corr_ratio=1.0000 corr_pct=0.4800
+
+=== trained X seed=1337 rung=512 ===
+  n points: 200  N range 1-511
+  key norms: median=2.5037 IQR=[2.0554, 3.5041]
+  IID NULL   ratio_of_medians=0.9678 median_of_ratios=0.9964 median_ratio_p5=1.4479 mean_pct=0.4856 median_pct=0.4883
+  CORR NULL  ratio_of_medians=0.9826 median_of_ratios=0.9967 mean_pct=0.5019 median_pct=0.4900
+  Nq1 (n= 50, N=[1,135]): iid_ratio=0.9593 iid_pct=0.4217  |  corr_ratio=0.9881 corr_pct=0.4625
+  Nq2 (n= 50, N=[140,267]): iid_ratio=1.0082 iid_pct=0.5150  |  corr_ratio=0.9844 corr_pct=0.4600
+  Nq3 (n= 50, N=[268,365]): iid_ratio=0.9029 iid_pct=0.3067  |  corr_ratio=0.9989 corr_pct=0.5025
+  Nq4 (n= 50, N=[381,511]): iid_ratio=1.0099 iid_pct=0.5250  |  corr_ratio=1.0078 corr_pct=0.5400
+
+=== trained X seed=1338 rung=512 ===
+  n points: 200  N range 2-511
+  key norms: median=2.5649 IQR=[2.1022, 3.7501]
+  IID NULL   ratio_of_medians=0.9864 median_of_ratios=0.9658 median_ratio_p5=1.4239 mean_pct=0.4594 median_pct=0.4283
+  CORR NULL  ratio_of_medians=0.9778 median_of_ratios=0.9800 mean_pct=0.4571 median_pct=0.4375
+  Nq1 (n= 49, N=[2,114]): iid_ratio=0.9174 iid_pct=0.3333  |  corr_ratio=0.9625 corr_pct=0.4600
+  Nq2 (n= 51, N=[115,249]): iid_ratio=0.9503 iid_pct=0.4133  |  corr_ratio=0.9651 corr_pct=0.4000
+  Nq3 (n= 50, N=[253,391]): iid_ratio=1.0006 iid_pct=0.5000  |  corr_ratio=0.9690 corr_pct=0.3925
+  Nq4 (n= 50, N=[396,511]): iid_ratio=0.9909 iid_pct=0.4717  |  corr_ratio=1.0006 corr_pct=0.5100
+
+=== trained X seed=1339 rung=512 ===
+  n points: 200  N range 3-512
+  key norms: median=2.5586 IQR=[2.0745, 3.5603]
+  IID NULL   ratio_of_medians=0.9259 median_of_ratios=0.9267 median_ratio_p5=1.3456 mean_pct=0.3990 median_pct=0.3400
+  CORR NULL  ratio_of_medians=0.9462 median_of_ratios=0.9629 mean_pct=0.4379 median_pct=0.3950
+  Nq1 (n= 50, N=[3,130]): iid_ratio=0.9075 iid_pct=0.3100  |  corr_ratio=0.9135 corr_pct=0.3500
+  Nq2 (n= 50, N=[134,263]): iid_ratio=1.0062 iid_pct=0.5083  |  corr_ratio=0.9959 corr_pct=0.4850
+  Nq3 (n= 50, N=[264,391]): iid_ratio=0.8550 iid_pct=0.2233  |  corr_ratio=0.9490 corr_pct=0.3850
+  Nq4 (n= 50, N=[392,512]): iid_ratio=0.9299 iid_pct=0.3633  |  corr_ratio=0.9961 corr_pct=0.4650
+
+##### RUNG ctx=1024 #####
+
+=== init S seed=1337 rung=1024 ===
+  n points: 200  N range 2-1021
+  key norms: median=2.2579 IQR=[1.9897, 2.5615]
+  IID NULL   ratio_of_medians=1.1010 median_of_ratios=1.0773 median_ratio_p5=1.3312 mean_pct=0.7105 median_pct=0.8400
+  CORR NULL  ratio_of_medians=1.0114 median_of_ratios=1.0058 mean_pct=0.5235 median_pct=0.5250
+  Nq1 (n= 50, N=[2,269]): iid_ratio=1.0294 iid_pct=0.6317  |  corr_ratio=0.9885 corr_pct=0.3800
+  Nq2 (n= 50, N=[280,533]): iid_ratio=1.0807 iid_pct=0.8117  |  corr_ratio=1.0168 corr_pct=0.5700
+  Nq3 (n= 50, N=[535,730]): iid_ratio=1.0985 iid_pct=0.8567  |  corr_ratio=1.0000 corr_pct=0.5025
+  Nq4 (n= 50, N=[762,1021]): iid_ratio=1.1316 iid_pct=0.9567  |  corr_ratio=1.0166 corr_pct=0.5775
+
+=== init S seed=1338 rung=1024 ===
+  n points: 200  N range 3-1022
+  key norms: median=2.2580 IQR=[1.9909, 2.5585]
+  IID NULL   ratio_of_medians=1.1094 median_of_ratios=1.0824 median_ratio_p5=1.3396 mean_pct=0.7007 median_pct=0.7950
+  CORR NULL  ratio_of_medians=1.0067 median_of_ratios=1.0000 mean_pct=0.5066 median_pct=0.5100
+  Nq1 (n= 49, N=[3,228]): iid_ratio=1.0653 iid_pct=0.6733  |  corr_ratio=1.0426 corr_pct=0.6050
+  Nq2 (n= 51, N=[229,497]): iid_ratio=1.0770 iid_pct=0.8133  |  corr_ratio=1.0071 corr_pct=0.5500
+  Nq3 (n= 50, N=[505,781]): iid_ratio=1.1013 iid_pct=0.7967  |  corr_ratio=0.9951 corr_pct=0.4575
+  Nq4 (n= 50, N=[792,1022]): iid_ratio=1.1042 iid_pct=0.8750  |  corr_ratio=1.0000 corr_pct=0.5150
+
+=== init S seed=1339 rung=1024 ===
+  n points: 200  N range 5-1024
+  key norms: median=2.2655 IQR=[2.0075, 2.5532]
+  IID NULL   ratio_of_medians=1.1042 median_of_ratios=1.0835 median_ratio_p5=1.3110 mean_pct=0.7306 median_pct=0.8250
+  CORR NULL  ratio_of_medians=1.0136 median_of_ratios=1.0020 mean_pct=0.5354 median_pct=0.5450
+  Nq1 (n= 50, N=[5,260]): iid_ratio=1.0265 iid_pct=0.6150  |  corr_ratio=0.9996 corr_pct=0.4725
+  Nq2 (n= 50, N=[267,525]): iid_ratio=1.1104 iid_pct=0.8817  |  corr_ratio=1.0419 corr_pct=0.6525
+  Nq3 (n= 50, N=[528,781]): iid_ratio=1.1109 iid_pct=0.9300  |  corr_ratio=1.0372 corr_pct=0.6775
+  Nq4 (n= 50, N=[784,1024]): iid_ratio=1.0784 iid_pct=0.8200  |  corr_ratio=0.9937 corr_pct=0.4225
+
+=== init X seed=1337 rung=1024 ===
+  n points: 200  N range 2-1021
+  key norms: median=2.2426 IQR=[1.9473, 2.5732]
+  IID NULL   ratio_of_medians=1.0641 median_of_ratios=1.0604 median_ratio_p5=1.5503 mean_pct=0.5945 median_pct=0.6367
+  CORR NULL  ratio_of_medians=1.0022 median_of_ratios=1.0107 mean_pct=0.5011 median_pct=0.5225
+  Nq1 (n= 50, N=[2,269]): iid_ratio=1.0518 iid_pct=0.6000  |  corr_ratio=1.0164 corr_pct=0.5375
+  Nq2 (n= 50, N=[280,533]): iid_ratio=1.0588 iid_pct=0.6433  |  corr_ratio=0.9895 corr_pct=0.4575
+  Nq3 (n= 50, N=[535,730]): iid_ratio=1.0367 iid_pct=0.5833  |  corr_ratio=0.9791 corr_pct=0.4175
+  Nq4 (n= 50, N=[762,1021]): iid_ratio=1.1076 iid_pct=0.7517  |  corr_ratio=1.0284 corr_pct=0.5575
+
+=== init X seed=1338 rung=1024 ===
+  n points: 200  N range 3-1022
+  key norms: median=2.2393 IQR=[1.9539, 2.5597]
+  IID NULL   ratio_of_medians=1.0615 median_of_ratios=1.0703 median_ratio_p5=1.5314 mean_pct=0.5914 median_pct=0.6500
+  CORR NULL  ratio_of_medians=1.0019 median_of_ratios=1.0035 mean_pct=0.5035 median_pct=0.5050
+  Nq1 (n= 49, N=[3,228]): iid_ratio=0.9896 iid_pct=0.4800  |  corr_ratio=0.9958 corr_pct=0.4950
+  Nq2 (n= 51, N=[229,497]): iid_ratio=1.0998 iid_pct=0.6633  |  corr_ratio=1.0122 corr_pct=0.5350
+  Nq3 (n= 50, N=[505,781]): iid_ratio=1.0863 iid_pct=0.7217  |  corr_ratio=1.0514 corr_pct=0.6550
+  Nq4 (n= 50, N=[792,1022]): iid_ratio=1.0652 iid_pct=0.6283  |  corr_ratio=0.9940 corr_pct=0.4775
+
+=== init X seed=1339 rung=1024 ===
+  n points: 200  N range 5-1024
+  key norms: median=2.2527 IQR=[1.9647, 2.5623]
+  IID NULL   ratio_of_medians=1.0574 median_of_ratios=1.0626 median_ratio_p5=1.5392 mean_pct=0.5854 median_pct=0.6333
+  CORR NULL  ratio_of_medians=0.9959 median_of_ratios=1.0098 mean_pct=0.4995 median_pct=0.5125
+  Nq1 (n= 50, N=[5,260]): iid_ratio=1.1000 iid_pct=0.7350  |  corr_ratio=1.0317 corr_pct=0.6125
+  Nq2 (n= 50, N=[267,525]): iid_ratio=1.0631 iid_pct=0.6400  |  corr_ratio=1.0077 corr_pct=0.5100
+  Nq3 (n= 50, N=[528,781]): iid_ratio=1.0855 iid_pct=0.7033  |  corr_ratio=1.0245 corr_pct=0.5675
+  Nq4 (n= 50, N=[784,1024]): iid_ratio=1.0136 iid_pct=0.5350  |  corr_ratio=0.9575 corr_pct=0.3825
+
+--- SANITY GATE (rung=1024): init corr-matched median percentiles, S x3 seeds then X x3 seeds = ['0.525', '0.510', '0.545', '0.522', '0.505', '0.512'] (expect ~0.5 per SS12.5's validation at ctx=256; a large deviation here means the correlation-matched null does not transfer to ctx=1024 and the trained numbers below are NOT trustworthy as-is) ---
+
+=== trained S seed=1337 rung=1024 ===
+  n points: 200  N range 2-1021
+  key norms: median=2.3636 IQR=[1.9359, 3.0589]
+  IID NULL   ratio_of_medians=0.7532 median_of_ratios=0.7283 median_ratio_p5=1.0244 mean_pct=0.2636 median_pct=0.0717
+  CORR NULL  ratio_of_medians=0.9100 median_of_ratios=1.0000 mean_pct=0.4410 median_pct=0.3975
+  Nq1 (n= 50, N=[2,269]): iid_ratio=0.6990 iid_pct=0.0633  |  corr_ratio=1.0000 corr_pct=0.4375
+  Nq2 (n= 50, N=[280,533]): iid_ratio=0.7082 iid_pct=0.0500  |  corr_ratio=1.0000 corr_pct=0.3725
+  Nq3 (n= 50, N=[535,730]): iid_ratio=0.6992 iid_pct=0.0300  |  corr_ratio=1.0000 corr_pct=0.3425
+  Nq4 (n= 50, N=[762,1021]): iid_ratio=0.8610 iid_pct=0.1517  |  corr_ratio=1.0000 corr_pct=0.4275
+
+=== trained S seed=1338 rung=1024 ===
+  n points: 200  N range 3-1022
+  key norms: median=2.4016 IQR=[1.9144, 3.1760]
+  IID NULL   ratio_of_medians=0.6433 median_of_ratios=0.6075 median_ratio_p5=0.8915 mean_pct=0.2226 median_pct=0.0217
+  CORR NULL  ratio_of_medians=0.9379 median_of_ratios=1.0000 mean_pct=0.4602 median_pct=0.4375
+  Nq1 (n= 49, N=[3,228]): iid_ratio=0.5864 iid_pct=0.0200  |  corr_ratio=0.9972 corr_pct=0.3000
+  Nq2 (n= 51, N=[229,497]): iid_ratio=0.3320 iid_pct=0.0000  |  corr_ratio=1.0000 corr_pct=0.4000
+  Nq3 (n= 50, N=[505,781]): iid_ratio=0.5538 iid_pct=0.0200  |  corr_ratio=1.0000 corr_pct=0.5250
+  Nq4 (n= 50, N=[792,1022]): iid_ratio=0.9020 iid_pct=0.2833  |  corr_ratio=1.0000 corr_pct=0.4650
+
+=== trained S seed=1339 rung=1024 ===
+  n points: 200  N range 5-1024
+  key norms: median=2.3453 IQR=[1.9156, 3.1050]
+  IID NULL   ratio_of_medians=0.6782 median_of_ratios=0.6557 median_ratio_p5=0.9507 mean_pct=0.2182 median_pct=0.0333
+  CORR NULL  ratio_of_medians=0.8914 median_of_ratios=1.0000 mean_pct=0.4618 median_pct=0.4750
+  Nq1 (n= 50, N=[5,260]): iid_ratio=0.6673 iid_pct=0.0383  |  corr_ratio=1.0000 corr_pct=0.3675
+  Nq2 (n= 50, N=[267,525]): iid_ratio=0.6323 iid_pct=0.0217  |  corr_ratio=1.0000 corr_pct=0.4425
+  Nq3 (n= 50, N=[528,781]): iid_ratio=0.6279 iid_pct=0.0400  |  corr_ratio=1.0000 corr_pct=0.5075
+  Nq4 (n= 50, N=[784,1024]): iid_ratio=0.6789 iid_pct=0.0333  |  corr_ratio=1.0000 corr_pct=0.5075
+
+=== trained X seed=1337 rung=1024 ===
+  n points: 200  N range 2-1021
+  key norms: median=2.5154 IQR=[2.0583, 3.5207]
+  IID NULL   ratio_of_medians=1.0694 median_of_ratios=1.0581 median_ratio_p5=1.5511 mean_pct=0.5575 median_pct=0.6333
+  CORR NULL  ratio_of_medians=1.0367 median_of_ratios=0.9985 mean_pct=0.5128 median_pct=0.4875
+  Nq1 (n= 50, N=[2,269]): iid_ratio=1.0344 iid_pct=0.5683  |  corr_ratio=0.9928 corr_pct=0.4450
+  Nq2 (n= 50, N=[280,533]): iid_ratio=1.0857 iid_pct=0.6883  |  corr_ratio=1.0078 corr_pct=0.5175
+  Nq3 (n= 50, N=[535,730]): iid_ratio=1.0733 iid_pct=0.6733  |  corr_ratio=1.0036 corr_pct=0.4925
+  Nq4 (n= 50, N=[762,1021]): iid_ratio=1.0734 iid_pct=0.6650  |  corr_ratio=1.0014 corr_pct=0.5050
+
+=== trained X seed=1338 rung=1024 ===
+  n points: 200  N range 3-1022
+  key norms: median=2.5486 IQR=[2.0893, 3.7272]
+  IID NULL   ratio_of_medians=0.9650 median_of_ratios=0.9809 median_ratio_p5=1.4313 mean_pct=0.4725 median_pct=0.4567
+  CORR NULL  ratio_of_medians=0.9517 median_of_ratios=0.9942 mean_pct=0.4670 median_pct=0.4525
+  Nq1 (n= 49, N=[3,228]): iid_ratio=0.9768 iid_pct=0.4500  |  corr_ratio=0.9871 corr_pct=0.4700
+  Nq2 (n= 51, N=[229,497]): iid_ratio=0.9633 iid_pct=0.3967  |  corr_ratio=0.9954 corr_pct=0.4900
+  Nq3 (n= 50, N=[505,781]): iid_ratio=0.9856 iid_pct=0.4633  |  corr_ratio=0.9958 corr_pct=0.3800
+  Nq4 (n= 50, N=[792,1022]): iid_ratio=0.9941 iid_pct=0.4900  |  corr_ratio=0.9800 corr_pct=0.4250
+
+=== trained X seed=1339 rung=1024 ===
+  n points: 200  N range 5-1024
+  key norms: median=2.5555 IQR=[2.0715, 3.5624]
+  IID NULL   ratio_of_medians=1.0120 median_of_ratios=0.9715 median_ratio_p5=1.4251 mean_pct=0.4928 median_pct=0.4417
+  CORR NULL  ratio_of_medians=0.9667 median_of_ratios=1.0041 mean_pct=0.5112 median_pct=0.5225
+  Nq1 (n= 50, N=[5,260]): iid_ratio=1.0060 iid_pct=0.5167  |  corr_ratio=1.0079 corr_pct=0.5275
+  Nq2 (n= 50, N=[267,525]): iid_ratio=1.0076 iid_pct=0.5200  |  corr_ratio=1.0175 corr_pct=0.5500
+  Nq3 (n= 50, N=[528,781]): iid_ratio=0.9022 iid_pct=0.2833  |  corr_ratio=0.9686 corr_pct=0.4100
+  Nq4 (n= 50, N=[784,1024]): iid_ratio=0.9847 iid_pct=0.4700  |  corr_ratio=1.0153 corr_pct=0.5700
+
+Saved raw arrays to C:\dev\projects\apm-agi_tests\p4_matched_N_trained_results_rungs_512_1024.npz

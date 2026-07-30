@@ -190,15 +190,29 @@ New:
 for S, since the two norms are equal everywhere (Moreno Cor. 1.5, verified
 to 4.4×10⁻¹⁶). Training it would only measure γ-init sensitivity.
 
-**V3b reopened, 2026-07-26/27 — not yet designed, no variant row yet.**
-It was moved out of scope on the reasoning that the symmetrized test would
-answer what it was for; S_sym's withdrawal above killed that test, leaving
-attribution without a conditioning-matched control. V3b (algebra broken,
-S's ~15–16× conditioning gap preserved) needs real design work before it can
-be added as a row: matching `cond(L_x)`'s theorem-fixed shape (BCDI 2009,
-eigenvalues `1×8, (1+S)×4, (1−S)×4` — see `RESULTS_phase4.md` §8.2/§12.1)
-requires generators that pairwise anticommute, which naive random sign flips
-on the true tensor do not give. Carried, not designed this pass.
+**V3b CLOSED, not-buildable — confirmed 2026-07-29, `RESULTS_phase4.md`
+§12.8.** Reopened 2026-07-26/27 after S_sym's withdrawal left attribution
+without a conditioning-matched, algebra-broken control; needed a tensor
+matching `cond(L_x)`'s theorem-fixed `(8,4,4)` eigenvalue-multiplicity
+shape (BCDI 2009) while genuinely breaking the sedenion multiplication
+(different ZD variety, no bilaterality). Tested directly
+(`phase4_v3b_rigidity_check.py`, no training): a generic perturbation of
+the true tensor at just 0.1–1% of its own norm — far short of a full
+index shuffle — already fully collapses the `(8,4,4)` degeneracy to 16
+distinct eigenvalues; the *only* perturbation direction found that
+preserves the spectrum exactly is orthogonal conjugation, which is already
+variant R (dropped from the grid — absorbed by learned projections,
+`score_R(q,k;W) ≡ score_S(q,k;OW)` to 1e-10). Every generic direction
+destroys the conditioning; the one direction that doesn't destroy it isn't
+algebra-broken. No third construction was found. Confirmed within the
+methods this project has actually used (shuffle, orthogonal conjugation) —
+not claimed as a general classification theorem. **Conclusion: a
+conditioning-matched, algebra-broken V3b cannot be built this way; the
+conditioning-vs-algebra attribution question is reclassified as
+unanswerable by a matched control and left to the correlational evidence
+in §12.8(c)** (cond doesn't cleanly predict the grid's own extrapolation
+ordering — Spearman ≈0 at ppl@512, weak at ppl@1024, and the four dense
+variants alone span a 2.5× ppl@1024 range at identical cond=1.0).
 
 Carried from Phase 4 as reference at 3 seeds each, **not re-run**: S, X, D0p,
 D0, D1, Q0.
@@ -433,8 +447,10 @@ Closed unless deliberately reopened:
   retrieval). Interesting and mechanism-derived, but speculative and a
   separate phase. Phase 5 is attribution, not application.
 - **The full V3 ladder** (isomorph / sign-flip / alternate-algebra controls),
-  **except V3b — reopened 2026-07-26/27 (`SESSION_CONTINUATION_HANDOFF_2026-07-26.md`
-  §3.2), see §4.** The rest of the ladder stays closed.
+  **including V3b — reopened 2026-07-26/27
+  (`SESSION_CONTINUATION_HANDOFF_2026-07-26.md` §3.2), CLOSED again
+  2026-07-29 as confirmed not-buildable, see §4/`RESULTS_phase4.md` §12.8.**
+  The whole ladder stays closed.
 - **Beating dense baselines.** See §3, Non-goal.
 - Carried closed doors from Phase 4: no K1, no variant R, no β-equivalence
   test for K3, `ZD_PAIR` unchanged, γ/β never weight-decayed.

@@ -62,6 +62,21 @@ pass, RESULTS_phase4.md SS12.5), all additive -- nothing above is revised:
      i.i.d. null, whose reference point is shifted above 0.5 by the
      positive correlation among real same-sequence keys -- see
      RESULTS_phase4.md SS12.5 for the argument and the empirical check).
+
+2026-07-29, APM Stage A (APM_STAGE_A_KICKOFF_2026-07-29.md STEP 3), additive:
+  `run_condition` now takes an explicit `ctx` (defaults to cfg["ctx"]=256,
+  identical to every prior invocation -- exact backward compatibility, same
+  seed formulas, nothing renumbered). `--rungs` (default "256") lets the
+  same validated correlation-matched-null instrument run on the
+  EXTRAPOLATION-RUNG inputs (ctx=512/1024, same construction as
+  phase4_grid.py's length_gen_eval) instead of the in-distribution val set,
+  against the SAME trained S/X checkpoints -- no new training, no new grid.
+  Both variants steer in-distribution (SS12.5); the S-vs-X dissociation is
+  an out-of-distribution phenomenon, so this measures steering out of
+  distribution directly. Per STEP 3's sanity-gate requirement, init-mode
+  results at a given rung print (and its corr-matched null's median
+  percentile, expected ~0.5) BEFORE that rung's trained results, so a
+  failure to transfer is visible before any trained number is read.
 """
 import argparse
 import sys
@@ -164,7 +179,14 @@ def build_model(variant, seed, cfg, ckpt_path=None):
 # ----------------------------------------------------------------------
 # main per-(variant, seed, mode) run
 # ----------------------------------------------------------------------
-def run_condition(variant, seed, mode, cfg, ds):
+def run_condition(variant, seed, mode, cfg, ds, ctx=None):
+    """`ctx` defaults to cfg["ctx"] (256, the in-distribution val-set
+    length used by every invocation before 2026-07-29). Passing a longer
+    ctx (512/1024) evaluates the identical validated instrument against
+    extrapolation-rung inputs -- same seed formulas below, so ctx=256
+    reproduces the original run bit-for-bit; only the get_batch/pos-arange/
+    point-sampling bound changes for other ctx values."""
+    ctx = cfg["ctx"] if ctx is None else ctx
     ckpt_path = (f"{CKPT_DIR}/{variant}_seed{seed}/ckpt.pt"
                 if mode == "trained" else None)
     T = structure_tensor(16) if variant == "S" else shuffled_structure_tensor(seed)
@@ -191,7 +213,7 @@ def run_condition(variant, seed, mode, cfg, ds):
             if batch_seed == 0:
                 model = build_model(variant, seed, cfg, ckpt_path=ckpt_path)
         gen = torch.Generator().manual_seed(seed * 100_000 + batch_seed)
-        x_tokens = ds.get_batch(cfg["batch_size"], cfg["ctx"], gen)
+        x_tokens = ds.get_batch(cfg["batch_size"], ctx, gen)
 
         with torch.no_grad():
             h = model.emb(x_tokens)
@@ -204,7 +226,7 @@ def run_condition(variant, seed, mode, cfg, ds):
                                  N_ALG).transpose(1, 2)
             k = attn.wk(xf).view(xf.shape[0], xf.shape[1], cfg["n_heads"],
                                  N_ALG).transpose(1, 2)
-            pos = torch.arange(cfg["ctx"], dtype=torch.float32)
+            pos = torch.arange(ctx, dtype=torch.float32)
             batch_q_rot[batch_seed] = attn._rotate(q, pos).numpy()
             batch_k_rot[batch_seed] = attn._rotate(k, pos).numpy()
 
@@ -214,7 +236,7 @@ def run_condition(variant, seed, mode, cfg, ds):
         rng = np.random.default_rng(seed * 1000 + batch_seed)
         b_idx = rng.integers(0, cfg["batch_size"], POINTS_PER_BATCH)
         h_idx = rng.integers(0, cfg["n_heads"], POINTS_PER_BATCH)
-        t_idx = rng.integers(0, cfg["ctx"], POINTS_PER_BATCH)
+        t_idx = rng.integers(0, ctx, POINTS_PER_BATCH)
 
         for bb, hh, tt in zip(b_idx, h_idx, t_idx):
             P = q_rot[bb, hh, tt, :]
@@ -262,7 +284,7 @@ def run_condition(variant, seed, mode, cfg, ds):
             Ns.append(N)
 
     return {
-        "variant": variant, "seed": seed, "mode": mode,
+        "variant": variant, "seed": seed, "mode": mode, "ctx": ctx,
         "actual_mins": np.array(actual_mins),
         "floors": np.array(floors),
         "null_mins": np.array(null_mins),
@@ -311,8 +333,17 @@ def summarize(res, label):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--modes", default="init,trained")
+    ap.add_argument("--rungs", default="256",
+                    help="context lengths to test. Default 256 = the "
+                         "in-distribution val set, identical seed formulas "
+                         "to every run before 2026-07-29 (exact "
+                         "reproduction). Pass 512,1024 for APM Stage A: "
+                         "the extrapolation rungs, same trained checkpoints, "
+                         "no new training (APM_STAGE_A_KICKOFF_2026-07-29.md "
+                         "STEP 3).")
     args = ap.parse_args()
     modes = args.modes.split(",")
+    rungs = [int(r) for r in args.rungs.split(",")]
 
     print("=== Item 2: r2 scale-invariance verification ===")
     max_diff = verify_scale_invariance()
@@ -324,15 +355,39 @@ if __name__ == "__main__":
           "mlp_hidden": 1824, "ctx": 256, "batch_size": 64}
 
     all_results = []
-    for mode in modes:
-        for variant in ("S", "X"):
-            for seed in (1337, 1338, 1339):
-                res = run_condition(variant, seed, mode, cfg, ds)
-                summarize(res, f"{mode} {variant} seed={seed}")
-                all_results.append(res)
+    for rung in rungs:
+        is_extra_rung = rung != cfg["ctx"]
+        if is_extra_rung:
+            print(f"##### RUNG ctx={rung} #####\n")
+        rung_results = {}
+        for mode in modes:
+            for variant in ("S", "X"):
+                for seed in (1337, 1338, 1339):
+                    res = run_condition(variant, seed, mode, cfg, ds, ctx=rung)
+                    label = f"{mode} {variant} seed={seed}"
+                    if is_extra_rung:
+                        label += f" rung={rung}"
+                    summarize(res, label)
+                    all_results.append(res)
+                    rung_results[(mode, variant, seed)] = res
+            # STEP 3 sanity gate: report init's transfer to this rung BEFORE
+            # any trained number at this rung is trusted/read.
+            if mode == "init" and is_extra_rung and "trained" in modes:
+                pcts = [np.median(rung_results[("init", v, s)]["corr_percentiles"])
+                        for v in ("S", "X") for s in (1337, 1338, 1339)]
+                print(f"--- SANITY GATE (rung={rung}): init corr-matched "
+                      f"median percentiles, S x3 seeds then X x3 seeds = "
+                      f"{[f'{p:.3f}' for p in pcts]} (expect ~0.5 per "
+                      f"SS12.5's validation at ctx=256; a large deviation "
+                      f"here means the correlation-matched null does not "
+                      f"transfer to ctx={rung} and the trained numbers "
+                      f"below are NOT trustworthy as-is) ---\n")
 
-    np.savez(r"C:\dev\projects\apm-agi_tests\p4_matched_N_trained_results.npz",
-             **{f"{r['mode']}_{r['variant']}_{r['seed']}_{k}": v
+    suffix = "" if rungs == [256] else "_rungs_" + "_".join(str(r) for r in rungs)
+    out_path = (r"C:\dev\projects\apm-agi_tests\p4_matched_N_trained_results"
+                f"{suffix}.npz")
+    np.savez(out_path,
+             **{f"{r['mode']}_{r['variant']}_{r['seed']}_ctx{r['ctx']}_{k}": v
                 for r in all_results for k, v in r.items()
                 if isinstance(v, np.ndarray)})
-    print("Saved raw arrays to p4_matched_N_trained_results.npz")
+    print(f"Saved raw arrays to {out_path}")

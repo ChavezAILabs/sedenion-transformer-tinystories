@@ -1195,3 +1195,297 @@ per-point arrays, all 12 conditions, both nulls), `p4_checkpoints/` and
 `p4_val_data/` (local copies of the Drive-synced checkpoints and tokenized
 val set, gitignored, re-fetchable from `MyDrive/p4_runs_ts` +
 `MyDrive/zda_data_cache` on the `paul@venicedispatch.info` Drive account).
+
+### 12.6 Seventh pass (2026-07-29): scope-check the init-seeding bug against
+the multiplicity-signature and annihilator-dimension runs
+
+§12.5's fix (`init S`'s three "seed" rows sharing bit-identical weights,
+caused by seeding init-mode model construction as `1000+batch_seed`,
+independent of the outer grid-seed loop) raised the question of whether the
+same bug shape affects two other "all three seeds" claims in this document:
+the eigenvalue multiplicity-signature run (§12.1: S `(8,4,4)` at 200/200
+points; X 16 distinct eigenvalues at 200/200 points, "all three grid
+seeds") and the annihilator-dimension run (§12.3: S theorem-fixed at 4; X
+measured at exactly 1, "every seed").
+
+**Confirmed: neither is affected, and the seed semantics are already
+correctly stated, not merely correctly named by coincidence.** Both checks
+operate directly on the structure tensor evaluated at random unit vectors
+`v` (`rng.normal`, unit-normalized) — there is no `K3Attention`
+instantiation, no `wq`/`wk` projection, and no `torch.manual_seed` call
+anywhere in their construction, so the specific bug shape (a model-weight
+seed accidentally independent of the outer loop variable) has no code path
+to occur in. "Seed" means something different and unambiguous in each of
+the three contexts, and the document's existing wording already tracks
+this correctly:
+
+- **§12.4/§12.5 (matched-N null, `phase4_matched_N_trained.py`):** "seed"
+  indexes one of 3 *trained model checkpoints* (or, pre-fix, was supposed
+  to index 3 independent fresh inits) — a genuine per-replicate weight
+  identity, which is exactly what the bug accidentally collapsed for `init
+  S`.
+- **§12.1/§12.3 (multiplicity signature, annihilator dimension,
+  `phase4_matched_N_null.py`/`phase4_init_r2_check.py` pattern): "all three
+  grid seeds" indexes which of the 3 *actual* `shuffled_structure_tensor(seed)`
+  constructions (seed ∈ {1337,1338,1339}) is under test — three genuinely
+  different tensors, not three draws of a shared random process. There is
+  no sense in which these three could have collapsed to "bit-identical" the
+  way `init S`'s weights did, because the object being varied *is* the seed
+  argument itself, consumed directly by `shuffled_structure_tensor()`, not
+  laundered through an unrelated `torch.manual_seed` call.** For S, no
+  seed loop is even meaningful — the `(8,4,4)` signature and annihilator
+  dimension 4 are theorem-fixed for *every* nonzero `v`, confirmed
+  numerically rather than sampled per seed.
+
+No wording fix was needed in §12.1/§12.3's own text (both already say
+"grid seeds" / "every seed" in a way that, read carefully, ties to the
+X-tensor-construction seed rather than implying independent model-weight
+replicates) — this section exists to make that reading explicit rather
+than leave it as something a reader has to reconstruct themselves, and to
+record that the scope-check was actually performed rather than assumed.
+One residual, unchanged limitation carried over from §12.1: the "200
+sampled points" for the multiplicity-signature run were never logged as a
+committed script — this check was run ad hoc and only its summary
+(multiplicity-partition counts, one illustrative spectrum per seed) survived
+into this document, so it cannot be independently re-executed byte-for-byte
+from the repo alone. That gap is orthogonal to the seeding-bug question
+just closed.
+
+### 12.7 Stage A pre-registration (2026-07-29, LOCKED BEFORE RESULTS)
+
+Both S and X steer in-distribution (§12.5); the S-vs-X double dissociation
+(§5) is an out-of-distribution phenomenon. APM Stage A
+(`APM_STAGE_A_KICKOFF_2026-07-29.md`) measures steering directly on the
+extrapolation-rung inputs (ctx=512/1024) using the same validated
+correlation-matched null, same trained checkpoints, no new training. Per
+that document's own STEP 4 instruction, the numeric definitions of
+"holds" and "collapses" below were proposed and owner-approved **before
+`phase4_matched_N_trained.py --rungs 512,1024` was run or any output
+examined** — this section was written first, the run happens after it.
+
+**Statistic** (identical to §12.5): per (variant, rung), pool the 3 seeds'
+corr-matched-null percentiles (600 points, 3×200) and compute the median
+percentile and `z = (0.5 − mean_percentile) / (std_percentile / √n)`
+against the Uniform(0,1) no-steering null.
+
+**Per-(variant, rung) call:**
+- **HOLDS**: pooled `z ≤ −3` **and** each of the 3 seeds individually has
+  its own median percentile `< 0.5` (not just the pooled figure — guards
+  against one seed's large effect masking the other two showing nothing).
+- **COLLAPSES**: pooled `|z| < 2`.
+- **AMBIGUOUS** (`2 ≤ |z| < 3`): reported as its own category, not forced
+  into either bucket. For the 3-way decision rule below, AMBIGUOUS is
+  treated as COLLAPSES (the conservative direction — it withholds
+  mechanism-paper support rather than grants it on a marginal result).
+
+**3-way decision rule** (unchanged from the kickoff doc, made numeric):
+- **Mechanism paper**: S is HOLDS at **both** rungs (512 and 1024) **and**
+  X is COLLAPSES-or-AMBIGUOUS at **both** rungs.
+- **Fallback paper**: every other outcome, with no exceptions carved out
+  now. This explicitly includes a rung-split (e.g. S holds at 512 but not
+  1024, or X holds at only one rung) — a clean dissociation at both
+  extrapolation lengths is required for the mechanism reading; a partial
+  or mixed result is not a fourth, more interesting story to interpret
+  post hoc, it is fallback-paper evidence.
+
+Sanity gate (unchanged from the kickoff doc): init-mode results at each
+rung are computed and reported before that rung's trained results; if the
+corr-matched null's init median percentile is not close to 0.5 at that
+rung, the trained numbers at that rung are flagged as untrustworthy before
+being read, not silently interpreted anyway.
+
+### 12.8 V3b non-separability (2026-07-29): confirmed, closed as not-buildable
+
+**The question.** V3b (conditioning-matched, algebra-broken control) was
+reopened `2026-07-26/27` (`SESSION_CONTINUATION_HANDOFF_2026-07-26.md`
+§3.2, `PHASE5_PLAN.md` §4) to attribute the S-vs-X dissociation between two
+accounts: is it the zero-divisor algebra specifically, or merely the
+~15–16× conditioning gap (`cond(L_v)`) between S and X, mediating a
+shape-of-attention effect rather than an algebraic one? Building V3b
+requires a tensor that (i) reproduces S's conditioning (the `(8,4,4)`
+eigenvalue-multiplicity spectrum of `L_vᵀL_v`, BCDI 2009, §12.1) while (ii)
+breaking the actual sedenion multiplication (different ZD variety, no
+bilaterality — "algebra broken" in the same sense X already is). Flagged
+as needing "real design work" and never built.
+
+**(a) Confirm or refute: can (i) and (ii) coexist?** Tested two ways,
+`phase4_v3b_rigidity_check.py`, no training, no GPU:
+
+- **Rigidity.** The true structure tensor was perturbed by increasing-
+  amplitude generic Gaussian noise (relative amplitude 0 to 1×, `‖noise‖=1`
+  direction, `‖T0‖=16`). The `(8,4,4)` signature and near-zero intra-group
+  eigenvalue split (2.7×10⁻¹⁵ at ε=0, exact to machine precision) hold at
+  ε=10⁻⁸ and 10⁻⁶ (split ∝ ε, as expected for a first-order perturbation),
+  then **the signature is already fully collapsed to 16 distinct
+  eigenvalues by ε=10⁻³–10⁻²** — i.e. a generic perturbation at **0.1–1%**
+  of the tensor's own norm, not a wholesale index shuffle, is already
+  enough to destroy the entire degenerate spectrum. This matches X's
+  already-measured 16-distinct-eigenvalue result (§12.1/§12.6) but sharpens
+  it: the degeneracy isn't merely absent under X's *specific* shuffle
+  construction, it is absent under *essentially any* generic direction,
+  vanishingly close to the true tensor. Consistent with the degenerate
+  locus being measure-zero / high-codimension in the space of bilinear
+  maps (an 8-fold plus two 4-fold eigenvalue coincidence, holding
+  simultaneously at *every* v in a 16-dimensional family, is an extremely
+  restrictive condition by ordinary eigenvalue-perturbation-theory
+  standards — satisfied by design for the CD-doubling construction, not by
+  chance).
+- **The one surviving direction.** Conjugating the true tensor by a random
+  orthogonal transform `Q` (`T'(Qx,Qy) = Q·T(x,y)`, construction verified
+  to 1.6×10⁻¹⁴) preserves the `(8,4,4)` spectrum **exactly** (eigenvalues of
+  `L_v` vs. `L_{Qv}` match to 3.3×10⁻¹⁵) — as similarity-invariance
+  requires. **This construction already exists in this project under
+  another name: variant R**, orthogonally-conjugated K3, proven vacuous
+  (`score_R(q,k;W) ≡ score_S(q,k;OW)` to 1e-10, `PHASE4_kernel_memo.md`) —
+  absorbed by learned projections, not a behaviorally distinct model, and
+  dropped from the grid for exactly that reason.
+
+**Reading: CONFIRMED, within the construction methods actually available
+to this project** (index/sign shuffles of the true tensor, the same family
+X belongs to; orthogonal conjugation, the family R belongs to). Every
+generic perturbation destroys the conditioning; the only perturbation
+that preserves it is already a known non-control. No third direction was
+found, tried, or is suggested by either check. This is **not** claimed as
+a fully general classification theorem covering every conceivable bilinear
+map on ℝ¹⁶ — that would require a much deeper rigidity proof this session
+did not attempt — but as a targeted answer to the actual design question
+("can this project build V3b"), the answer is no, and the failure is
+principled rather than a lack of trying: the two directions this project's
+own existing controls already explore (shuffle, orthogonal conjugation)
+exhaust the extremes (destroy-everything vs. preserve-everything), with
+nothing found in between.
+
+**(b) Consequence: V3b is retired, not merely deferred.** `PHASE5_PLAN.md`
+§4/§11 updated — V3b moves from "needs real design work" to "closed,
+not-buildable by shuffle or conjugation; no other construction identified."
+The conditioning-vs-algebra attribution question this control was meant to
+answer is not resolved by this — it is reclassified as **not answerable by
+a matched-control experiment at all**, only by the correlational evidence
+in (c) below.
+
+**(c) Free empirical companion (no training): does conditioning predict
+the grid's extrapolation ordering at all?** `phase4_v3b_cond_regression.py`
+computes a per-variant conditioning number for all six grid variants —
+`median cond(L_v)` over 2000 random unit v for S (2.8106, theorem-fixed,
+seed-independent) and X (41.75–42.96 across the three grid seeds); for the
+four dense variants (D0p, D0, D1, Q0), which have no bilinear structure
+tensor at all (`score(q,k) = qᵀk/√d_h` is literally the identity bilinear
+form), **cond = 1.0 by explicit convention** (perfectly conditioned,
+v-independent) — then regresses this against the real 18-run grid's own
+`ppl@512`/`ppl@1024` (`p4_artifacts/*/summary.json`, no new training):
+
+| | Pearson(cond, ppl) | Pearson(log cond, log ppl) | Spearman |
+|---|---|---|---|
+| ppl@512 | +0.429 | +0.409 | **−0.001** |
+| ppl@1024 | +0.638 | +0.576 | **+0.263** |
+
+**No clean relationship.** The moderate positive Pearson figures are driven
+almost entirely by X being simultaneously the worst-conditioned point and
+the worst-extrapolating point — a single high-leverage outlier, not a
+population trend; the rank-based Spearman correlation (far less sensitive
+to one outlier's exact magnitude) is essentially zero at ppl@512 and weak
+at ppl@1024. **Sharper evidence: the four dense variants all share
+cond=1.0 identically, yet their own ppl@1024 spans 18.68 (D0) to 47.18
+(Q0) — a 2.5× range with zero conditioning variance to explain it.** S
+(cond=2.81, worse-conditioned than every dense variant) lands at 34.90,
+statistically indistinguishable from D1 (cond=1.0, 34.04) and squarely
+inside the dense family's own spread — conditioning does not even cleanly
+separate S from the dense pack, let alone explain X's separate deficit.
+**Conclusion: conditioning is not a sufficient explanation for the grid's
+extrapolation ordering** — whatever differentiates D0/D0p/D1/Q0 from each
+other (positional scheme, MLP width, query-(in)dependence) accounts for
+variance at least as large as anything attributable to conditioning, and
+no new training run is needed to reach this conclusion (per the task's own
+stated bar). This does not by itself rule out conditioning as *part* of
+X's story specifically — S-vs-X is still a two-point comparison confounded
+exactly as V3b was meant to unconfound — it rules out conditioning as a
+*grid-wide* driver, which is the only claim this companion check can
+support without the now-closed V3b control.
+
+**Files**: `phase4_v3b_rigidity_check.py`, `phase4_v3b_cond_regression.py`
+(both new, no training, reusable).
+
+### 12.9 APM Stage A (2026-07-29/30): extrapolation-rung steering test —
+mechanism-paper outcome
+
+**Setup.** Per §12.7's locked pre-registration, `phase4_matched_N_trained.py
+--rungs 512,1024` ran the validated correlation-matched-null instrument
+(§12.5) against the same trained S/X checkpoints, on ctx=512 and ctx=1024
+extrapolation-rung inputs instead of the ctx=256 val set — same
+construction as `phase4_grid.py`'s own `length_gen_eval`, no new training.
+
+**Sanity gate (checked before any trained number, as pre-registered):**
+init-mode corr-matched median percentiles at ctx=512 were `[0.508, 0.480,
+0.497]` (S) and `[0.450, 0.455, 0.497]` (X); at ctx=1024, `[0.525, 0.510,
+0.545]` (S) and `[0.522, 0.505, 0.512]` (X) — all close to the 0.5
+no-steering reference at both rungs, for both variants, every seed. The
+correlation-matched null transfers cleanly to both extrapolation lengths;
+the trained results below are trustworthy under it.
+
+**A bug was caught before finalizing, not after: report it plainly.**
+§12.7's own written formula, `z = (0.5 − mean_percentile) / (std/√n)`, has
+the subtraction order backwards relative to the sign convention already
+established and used throughout §12.5 (there, z is *negative* for a real
+steering effect — e.g. "z≈−6.4" for trained S in-distribution, mean
+percentile 0.41 < 0.5). Applying §12.7's literal formula to this section's
+data produced *positive* z for the same "percentile below 0.5" condition,
+which would make the pre-registered `z ≤ −3` HOLDS threshold
+**structurally unsatisfiable regardless of the true effect** — a
+self-inconsistency between the written formula and the written threshold,
+not a new finding about the data. Caught by inspecting the first computed
+table (all positive z where a real effect was expected) before writing
+anything up. **Fixed to `z = (mean_percentile − 0.5) / (std/√n)`** — this
+recovers the established SS12.5 sign convention exactly and is the
+formula actually applied below. This is disclosed here in full rather than
+silently corrected, because it is exactly the kind of after-the-fact
+adjustment pre-registration exists to make visible: the **threshold
+values, their meaning (HOLDS = a real steering effect at that magnitude),
+and the decision rule's structure are unchanged** — only a subtraction-
+order typo in translating that already-agreed meaning into a formula was
+fixed, before any decision was read off it.
+
+**Results** (pooled over 3 seeds × 200 points = 600, `phase4_stageA_decision.py`):
+
+| variant | rung | pooled median pct | pooled z | per-seed median pct | call |
+|---|---|---|---|---|---|
+| S | 512 | 0.4275 | −4.43 | [0.355, 0.485, 0.435] (all <0.5) | **HOLDS** |
+| S | 1024 | 0.4400 | −3.90 | [0.398, 0.438, 0.475] (all <0.5) | **HOLDS** |
+| X | 512 | 0.4400 | −2.91 | [0.490, 0.438, 0.395] | AMBIGUOUS |
+| X | 1024 | 0.4800 | −0.25 | [0.487, 0.453, 0.522] | COLLAPSES |
+
+S's effect is not a resolution-floor artifact at either rung either
+(`ratio_p5` — actual_min / null 5th-percentile — pooled medians ≈0.89–1.02
+across seeds/rungs, well short of saturating near the trial-count floor,
+same diagnostic as §12.5 item 4).
+
+**Pre-registered decision:** S is HOLDS at **both** rungs, with per-seed
+consistency satisfied at both (all 3 seeds individually below 0.5, not
+just the pooled figure). X is AMBIGUOUS at 512 (borderline, `2≤|z|<3`,
+defaults to COLLAPSES per §12.7) and COLLAPSES outright at 1024 (z=−0.25,
+indistinguishable from no effect). **→ MECHANISM PAPER**: the clean
+dissociation condition (S holds both rungs, X collapses/ambiguous both
+rungs) is met, with no rung-split and no ambiguity requiring a tie-break
+in S's favor — X's own numbers get *weaker* going from 512 to 1024, the
+opposite of what an artifact-of-more-data account would predict if it
+were simply "still deciding."
+
+**What this does and does not establish.** Both S and X engage the K3
+mechanism in-distribution (§12.5) — engagement alone does not explain the
+S-vs-X extrapolation dissociation (§5), as already flagged. Stage A adds:
+**only S's engagement transfers out of distribution; X's does not.** This
+is a real, pre-registered, sign-bug-corrected-before-reveal result, not an
+inference from end-state data the way Stage 0 item 1's trajectory reading
+was (§1 of `PHASE5_stage0_findings_2026-07-26.md`) — it is measured
+directly at the rungs in question. It does **not** by itself prove *why*
+only S's engagement transfers — the kickoff document's own suggested
+reading (S's structure is G₂-organized and coherent, per the bilaterality/
+multiplicity-signature/annihilator-dimension discriminators already on
+record — §8.4 / §12.1–§12.3 — while X's is an arbitrary bilinear map with
+no such organizing structure, so its in-distribution engagement doesn't
+generalize to unseen key distributions) is a plausible mechanism
+connecting an already-established structural fact to a newly-measured
+behavioral one, not something Stage A's numbers alone certify. That
+connective argument, not a new measurement, is the paper's job now.
+
+**Files**: `phase4_stageA_decision.py` (new), `p4_matched_N_trained_results_rungs_512_1024.npz`
+(raw arrays, all 24 conditions), `p4_matched_N_trained_output_rungs.log`.
