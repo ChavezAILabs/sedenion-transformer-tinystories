@@ -3,110 +3,122 @@
 
 === init S seed=1337 ===
   n points: 200  N range 1-256
-  key norms: median=2.2448 IQR=[1.9997, 2.5361]
-  POOLED ratio_of_medians=1.0524 median_of_ratios=1.0387 mean_percentile=0.6039
-  N-quartile 1 (n= 50, N in [1,68]): ratio_of_medians=1.0203 median_of_ratios=1.0169 mean_percentile=0.5278
-  N-quartile 2 (n= 49, N in [70,129]): ratio_of_medians=1.0861 median_of_ratios=1.0250 mean_percentile=0.6378
-  N-quartile 3 (n= 51, N in [134,183]): ratio_of_medians=1.0656 median_of_ratios=1.0494 mean_percentile=0.6341
-  N-quartile 4 (n= 50, N in [191,256]): ratio_of_medians=1.0526 median_of_ratios=1.0600 mean_percentile=0.6162
+  key norms: median=2.2546 IQR=[1.9922, 2.5597]
+  IID NULL   ratio_of_medians=1.0641 median_of_ratios=1.0457 median_ratio_p5=1.3140 mean_pct=0.6068 median_pct=0.6750
+  CORR NULL  ratio_of_medians=1.0151 median_of_ratios=1.0000 mean_pct=0.4890 median_pct=0.5250
+  Nq1 (n= 50, N=[1,68]): iid_ratio=0.9754 iid_pct=0.4167  |  corr_ratio=0.9527 corr_pct=0.3400
+  Nq2 (n= 49, N=[70,129]): iid_ratio=1.0721 iid_pct=0.7600  |  corr_ratio=1.0180 corr_pct=0.5950
+  Nq3 (n= 51, N=[134,183]): iid_ratio=1.0549 iid_pct=0.7433  |  corr_ratio=1.0091 corr_pct=0.5400
+  Nq4 (n= 50, N=[191,256]): iid_ratio=1.1129 iid_pct=0.8167  |  corr_ratio=1.0089 corr_pct=0.5350
 
 === init S seed=1338 ===
   n points: 200  N range 1-256
-  key norms: median=2.2448 IQR=[1.9985, 2.5408]
-  POOLED ratio_of_medians=1.0582 median_of_ratios=1.0338 mean_percentile=0.6141
-  N-quartile 1 (n= 49, N in [1,57]): ratio_of_medians=1.0257 median_of_ratios=1.0133 mean_percentile=0.5627
-  N-quartile 2 (n= 51, N in [58,125]): ratio_of_medians=1.0494 median_of_ratios=1.0321 mean_percentile=0.5945
-  N-quartile 3 (n= 50, N in [127,196]): ratio_of_medians=1.0568 median_of_ratios=1.0518 mean_percentile=0.6668
-  N-quartile 4 (n= 50, N in [198,256]): ratio_of_medians=1.0765 median_of_ratios=1.0239 mean_percentile=0.6318
+  key norms: median=2.2454 IQR=[1.9959, 2.5467]
+  IID NULL   ratio_of_medians=1.0545 median_of_ratios=1.0504 median_ratio_p5=1.2940 mean_pct=0.6274 median_pct=0.6933
+  CORR NULL  ratio_of_medians=0.9950 median_of_ratios=1.0000 mean_pct=0.5039 median_pct=0.4750
+  Nq1 (n= 49, N=[1,57]): iid_ratio=1.0092 iid_pct=0.5367  |  corr_ratio=0.9760 corr_pct=0.4400
+  Nq2 (n= 51, N=[58,125]): iid_ratio=1.0267 iid_pct=0.6133  |  corr_ratio=0.9718 corr_pct=0.4050
+  Nq3 (n= 50, N=[127,196]): iid_ratio=1.0888 iid_pct=0.8783  |  corr_ratio=1.0183 corr_pct=0.5975
+  Nq4 (n= 50, N=[198,256]): iid_ratio=1.0667 iid_pct=0.7383  |  corr_ratio=1.0000 corr_pct=0.4800
 
 === init S seed=1339 ===
   n points: 200  N range 2-256
-  key norms: median=2.2448 IQR=[1.9896, 2.5406]
-  POOLED ratio_of_medians=1.0586 median_of_ratios=1.0559 mean_percentile=0.6447
-  N-quartile 1 (n= 50, N in [2,65]): ratio_of_medians=0.9865 median_of_ratios=1.0135 mean_percentile=0.5360
-  N-quartile 2 (n= 49, N in [67,130]): ratio_of_medians=1.0725 median_of_ratios=1.0580 mean_percentile=0.6265
-  N-quartile 3 (n= 50, N in [132,193]): ratio_of_medians=1.0774 median_of_ratios=1.0770 mean_percentile=0.6914
-  N-quartile 4 (n= 51, N in [196,256]): ratio_of_medians=1.0717 median_of_ratios=1.0915 mean_percentile=0.7229
+  key norms: median=2.2566 IQR=[1.9961, 2.5492]
+  IID NULL   ratio_of_medians=1.0509 median_of_ratios=1.0489 median_ratio_p5=1.3282 mean_pct=0.6201 median_pct=0.6450
+  CORR NULL  ratio_of_medians=1.0086 median_of_ratios=1.0000 mean_pct=0.4984 median_pct=0.4800
+  Nq1 (n= 50, N=[2,65]): iid_ratio=1.0194 iid_pct=0.5550  |  corr_ratio=0.9966 corr_pct=0.4675
+  Nq2 (n= 49, N=[67,130]): iid_ratio=1.0232 iid_pct=0.5867  |  corr_ratio=0.9792 corr_pct=0.4100
+  Nq3 (n= 50, N=[132,193]): iid_ratio=1.0510 iid_pct=0.6983  |  corr_ratio=1.0119 corr_pct=0.5750
+  Nq4 (n= 51, N=[196,256]): iid_ratio=1.0992 iid_pct=0.8133  |  corr_ratio=1.0292 corr_pct=0.6050
 
 === init X seed=1337 ===
   n points: 200  N range 1-256
-  key norms: median=2.2355 IQR=[1.9497, 2.5463]
-  POOLED ratio_of_medians=1.0227 median_of_ratios=1.0305 mean_percentile=0.5386
-  N-quartile 1 (n= 50, N in [1,68]): ratio_of_medians=1.0434 median_of_ratios=1.0176 mean_percentile=0.5086
-  N-quartile 2 (n= 49, N in [70,129]): ratio_of_medians=1.0139 median_of_ratios=1.0348 mean_percentile=0.5804
-  N-quartile 3 (n= 51, N in [134,183]): ratio_of_medians=1.0543 median_of_ratios=1.0776 mean_percentile=0.6010
-  N-quartile 4 (n= 50, N in [191,256]): ratio_of_medians=0.9482 median_of_ratios=0.9851 mean_percentile=0.4640
+  key norms: median=2.2388 IQR=[1.9478, 2.5685]
+  IID NULL   ratio_of_medians=1.0444 median_of_ratios=1.0342 median_ratio_p5=1.5140 mean_pct=0.5487 median_pct=0.5717
+  CORR NULL  ratio_of_medians=1.0313 median_of_ratios=1.0088 mean_pct=0.5093 median_pct=0.5175
+  Nq1 (n= 50, N=[1,68]): iid_ratio=1.0342 iid_pct=0.5750  |  corr_ratio=1.0174 corr_pct=0.5350
+  Nq2 (n= 49, N=[70,129]): iid_ratio=1.0238 iid_pct=0.5367  |  corr_ratio=0.9962 corr_pct=0.4800
+  Nq3 (n= 51, N=[134,183]): iid_ratio=1.0442 iid_pct=0.5967  |  corr_ratio=1.0438 corr_pct=0.6100
+  Nq4 (n= 50, N=[191,256]): iid_ratio=1.0586 iid_pct=0.6200  |  corr_ratio=1.0028 corr_pct=0.5075
 
 === init X seed=1338 ===
   n points: 200  N range 1-256
-  key norms: median=2.2389 IQR=[1.9595, 2.5535]
-  POOLED ratio_of_medians=1.0128 median_of_ratios=1.0043 mean_percentile=0.5189
-  N-quartile 1 (n= 49, N in [1,57]): ratio_of_medians=1.0007 median_of_ratios=0.9957 mean_percentile=0.4580
-  N-quartile 2 (n= 51, N in [58,125]): ratio_of_medians=0.9395 median_of_ratios=0.9686 mean_percentile=0.4475
-  N-quartile 3 (n= 50, N in [127,196]): ratio_of_medians=1.0914 median_of_ratios=1.0786 mean_percentile=0.6036
-  N-quartile 4 (n= 50, N in [198,256]): ratio_of_medians=1.0031 median_of_ratios=1.0421 mean_percentile=0.5666
+  key norms: median=2.2296 IQR=[1.9589, 2.5479]
+  IID NULL   ratio_of_medians=1.0249 median_of_ratios=1.0191 median_ratio_p5=1.5250 mean_pct=0.5298 median_pct=0.5383
+  CORR NULL  ratio_of_medians=1.0072 median_of_ratios=0.9912 mean_pct=0.4876 median_pct=0.4800
+  Nq1 (n= 49, N=[1,57]): iid_ratio=1.0515 iid_pct=0.6000  |  corr_ratio=1.0360 corr_pct=0.5600
+  Nq2 (n= 51, N=[58,125]): iid_ratio=0.9817 iid_pct=0.4700  |  corr_ratio=0.9926 corr_pct=0.4850
+  Nq3 (n= 50, N=[127,196]): iid_ratio=0.9571 iid_pct=0.4067  |  corr_ratio=0.9334 corr_pct=0.3325
+  Nq4 (n= 50, N=[198,256]): iid_ratio=1.0635 iid_pct=0.6517  |  corr_ratio=1.0100 corr_pct=0.5350
 
 === init X seed=1339 ===
   n points: 200  N range 2-256
-  key norms: median=2.2352 IQR=[1.9479, 2.5569]
-  POOLED ratio_of_medians=1.0391 median_of_ratios=1.0237 mean_percentile=0.5325
-  N-quartile 1 (n= 50, N in [2,65]): ratio_of_medians=1.0659 median_of_ratios=1.0142 mean_percentile=0.5048
-  N-quartile 2 (n= 49, N in [67,130]): ratio_of_medians=1.1092 median_of_ratios=1.0998 mean_percentile=0.5998
-  N-quartile 3 (n= 50, N in [132,193]): ratio_of_medians=0.9531 median_of_ratios=0.9937 mean_percentile=0.4976
-  N-quartile 4 (n= 51, N in [196,256]): ratio_of_medians=0.9494 median_of_ratios=1.0225 mean_percentile=0.5292
+  key norms: median=2.2509 IQR=[1.9615, 2.5593]
+  IID NULL   ratio_of_medians=1.0638 median_of_ratios=1.0440 median_ratio_p5=1.5156 mean_pct=0.5443 median_pct=0.5900
+  CORR NULL  ratio_of_medians=1.0161 median_of_ratios=0.9947 mean_pct=0.4880 median_pct=0.4925
+  Nq1 (n= 50, N=[2,65]): iid_ratio=0.9529 iid_pct=0.3967  |  corr_ratio=0.9351 corr_pct=0.3775
+  Nq2 (n= 49, N=[67,130]): iid_ratio=1.0613 iid_pct=0.6033  |  corr_ratio=1.0343 corr_pct=0.5650
+  Nq3 (n= 50, N=[132,193]): iid_ratio=1.0099 iid_pct=0.5183  |  corr_ratio=0.9798 corr_pct=0.4450
+  Nq4 (n= 51, N=[196,256]): iid_ratio=1.1092 iid_pct=0.7600  |  corr_ratio=1.0332 corr_pct=0.5700
 
 === trained S seed=1337 ===
   n points: 200  N range 1-256
   key norms: median=2.3487 IQR=[1.9343, 3.0658]
-  POOLED ratio_of_medians=0.6142 median_of_ratios=0.6136 mean_percentile=0.1885
-  N-quartile 1 (n= 50, N in [1,68]): ratio_of_medians=0.7519 median_of_ratios=0.6819 mean_percentile=0.2224
-  N-quartile 2 (n= 49, N in [70,129]): ratio_of_medians=0.6570 median_of_ratios=0.7119 mean_percentile=0.1845
-  N-quartile 3 (n= 51, N in [134,183]): ratio_of_medians=0.5311 median_of_ratios=0.5581 mean_percentile=0.1306
-  N-quartile 4 (n= 50, N in [191,256]): ratio_of_medians=0.6368 median_of_ratios=0.6119 mean_percentile=0.2178
+  IID NULL   ratio_of_medians=0.6146 median_of_ratios=0.6187 median_ratio_p5=0.9258 mean_pct=0.1907 median_pct=0.0233
+  CORR NULL  ratio_of_medians=0.8002 median_of_ratios=1.0000 mean_pct=0.4000 median_pct=0.3775
+  Nq1 (n= 50, N=[1,68]): iid_ratio=0.6619 iid_pct=0.0550  |  corr_ratio=0.9073 corr_pct=0.2725
+  Nq2 (n= 49, N=[70,129]): iid_ratio=0.6890 iid_pct=0.0133  |  corr_ratio=1.0000 corr_pct=0.3500
+  Nq3 (n= 51, N=[134,183]): iid_ratio=0.5376 iid_pct=0.0100  |  corr_ratio=1.0000 corr_pct=0.4450
+  Nq4 (n= 50, N=[191,256]): iid_ratio=0.6066 iid_pct=0.0283  |  corr_ratio=1.0000 corr_pct=0.3850
 
 === trained S seed=1338 ===
   n points: 200  N range 1-256
   key norms: median=2.3931 IQR=[1.9166, 3.1757]
-  POOLED ratio_of_medians=0.6297 median_of_ratios=0.6478 mean_percentile=0.2415
-  N-quartile 1 (n= 49, N in [1,57]): ratio_of_medians=0.8420 median_of_ratios=0.7258 mean_percentile=0.3122
-  N-quartile 2 (n= 51, N in [58,125]): ratio_of_medians=0.6770 median_of_ratios=0.6319 mean_percentile=0.1502
-  N-quartile 3 (n= 50, N in [127,196]): ratio_of_medians=0.7370 median_of_ratios=0.7370 mean_percentile=0.2856
-  N-quartile 4 (n= 50, N in [198,256]): ratio_of_medians=0.6443 median_of_ratios=0.5934 mean_percentile=0.2214
+  IID NULL   ratio_of_medians=0.6318 median_of_ratios=0.6570 median_ratio_p5=0.9518 mean_pct=0.2408 median_pct=0.0367
+  CORR NULL  ratio_of_medians=0.9776 median_of_ratios=1.0000 mean_pct=0.4521 median_pct=0.4350
+  Nq1 (n= 49, N=[1,57]): iid_ratio=0.7397 iid_pct=0.0567  |  corr_ratio=1.0000 corr_pct=0.4050
+  Nq2 (n= 51, N=[58,125]): iid_ratio=0.6340 iid_pct=0.0300  |  corr_ratio=1.0000 corr_pct=0.4350
+  Nq3 (n= 50, N=[127,196]): iid_ratio=0.7228 iid_pct=0.0617  |  corr_ratio=1.0000 corr_pct=0.6025
+  Nq4 (n= 50, N=[198,256]): iid_ratio=0.5902 iid_pct=0.0133  |  corr_ratio=1.0000 corr_pct=0.4075
 
 === trained S seed=1339 ===
   n points: 200  N range 2-256
   key norms: median=2.3445 IQR=[1.9162, 3.0910]
-  POOLED ratio_of_medians=0.6879 median_of_ratios=0.6797 mean_percentile=0.2007
-  N-quartile 1 (n= 50, N in [2,65]): ratio_of_medians=0.6723 median_of_ratios=0.6738 mean_percentile=0.2050
-  N-quartile 2 (n= 49, N in [67,130]): ratio_of_medians=0.8240 median_of_ratios=0.7843 mean_percentile=0.2398
-  N-quartile 3 (n= 50, N in [132,193]): ratio_of_medians=0.5375 median_of_ratios=0.5150 mean_percentile=0.1386
-  N-quartile 4 (n= 51, N in [196,256]): ratio_of_medians=0.5827 median_of_ratios=0.5731 mean_percentile=0.2198
+  IID NULL   ratio_of_medians=0.6885 median_of_ratios=0.6819 median_ratio_p5=0.9223 mean_pct=0.2026 median_pct=0.0267
+  CORR NULL  ratio_of_medians=0.8679 median_of_ratios=1.0000 mean_pct=0.4201 median_pct=0.4025
+  Nq1 (n= 50, N=[2,65]): iid_ratio=0.6614 iid_pct=0.0300  |  corr_ratio=0.9163 corr_pct=0.3675
+  Nq2 (n= 49, N=[67,130]): iid_ratio=0.7859 iid_pct=0.0867  |  corr_ratio=1.0000 corr_pct=0.3500
+  Nq3 (n= 50, N=[132,193]): iid_ratio=0.5193 iid_pct=0.0067  |  corr_ratio=1.0000 corr_pct=0.3325
+  Nq4 (n= 51, N=[196,256]): iid_ratio=0.5853 iid_pct=0.0233  |  corr_ratio=1.0000 corr_pct=0.4750
 
 === trained X seed=1337 ===
   n points: 200  N range 1-256
   key norms: median=2.5125 IQR=[2.0665, 3.5090]
-  POOLED ratio_of_medians=0.9659 median_of_ratios=0.9427 mean_percentile=0.4485
-  N-quartile 1 (n= 50, N in [1,68]): ratio_of_medians=0.9455 median_of_ratios=0.8901 mean_percentile=0.4038
-  N-quartile 2 (n= 49, N in [70,129]): ratio_of_medians=0.9640 median_of_ratios=0.9667 mean_percentile=0.5018
-  N-quartile 3 (n= 51, N in [134,183]): ratio_of_medians=0.8580 median_of_ratios=0.9289 mean_percentile=0.4194
-  N-quartile 4 (n= 50, N in [191,256]): ratio_of_medians=1.0096 median_of_ratios=1.0059 mean_percentile=0.4704
+  IID NULL   ratio_of_medians=0.9591 median_of_ratios=0.9440 median_ratio_p5=1.4286 mean_pct=0.4508 median_pct=0.3883
+  CORR NULL  ratio_of_medians=0.9707 median_of_ratios=0.9932 mean_pct=0.4765 median_pct=0.4825
+  Nq1 (n= 50, N=[1,68]): iid_ratio=0.8944 iid_pct=0.3083  |  corr_ratio=0.9417 corr_pct=0.3900
+  Nq2 (n= 49, N=[70,129]): iid_ratio=0.9440 iid_pct=0.4033  |  corr_ratio=1.0207 corr_pct=0.5750
+  Nq3 (n= 51, N=[134,183]): iid_ratio=0.9374 iid_pct=0.3433  |  corr_ratio=0.9948 corr_pct=0.4900
+  Nq4 (n= 50, N=[191,256]): iid_ratio=1.0053 iid_pct=0.5067  |  corr_ratio=0.9992 corr_pct=0.4950
 
 === trained X seed=1338 ===
   n points: 200  N range 1-256
   key norms: median=2.5726 IQR=[2.1113, 3.7506]
-  POOLED ratio_of_medians=0.9292 median_of_ratios=0.9407 mean_percentile=0.4061
-  N-quartile 1 (n= 49, N in [1,57]): ratio_of_medians=0.8071 median_of_ratios=0.8090 mean_percentile=0.3120
-  N-quartile 2 (n= 51, N in [58,125]): ratio_of_medians=0.9907 median_of_ratios=0.9737 mean_percentile=0.5012
-  N-quartile 3 (n= 50, N in [127,196]): ratio_of_medians=0.9232 median_of_ratios=0.9470 mean_percentile=0.3856
-  N-quartile 4 (n= 50, N in [198,256]): ratio_of_medians=0.9565 median_of_ratios=0.9767 mean_percentile=0.4216
+  IID NULL   ratio_of_medians=0.9373 median_of_ratios=0.9433 median_ratio_p5=1.4041 mean_pct=0.4145 median_pct=0.3900
+  CORR NULL  ratio_of_medians=0.9447 median_of_ratios=0.9811 mean_pct=0.4450 median_pct=0.4500
+  Nq1 (n= 49, N=[1,57]): iid_ratio=0.8387 iid_pct=0.1967  |  corr_ratio=0.8845 corr_pct=0.2750
+  Nq2 (n= 51, N=[58,125]): iid_ratio=0.9602 iid_pct=0.4267  |  corr_ratio=0.9997 corr_pct=0.5000
+  Nq3 (n= 50, N=[127,196]): iid_ratio=0.9349 iid_pct=0.3717  |  corr_ratio=0.9844 corr_pct=0.4575
+  Nq4 (n= 50, N=[198,256]): iid_ratio=0.9951 iid_pct=0.4933  |  corr_ratio=0.9858 corr_pct=0.4225
 
 === trained X seed=1339 ===
   n points: 200  N range 2-256
   key norms: median=2.5691 IQR=[2.0877, 3.6202]
-  POOLED ratio_of_medians=0.9574 median_of_ratios=0.9313 mean_percentile=0.4296
-  N-quartile 1 (n= 50, N in [2,65]): ratio_of_medians=0.9222 median_of_ratios=0.9358 mean_percentile=0.4340
-  N-quartile 2 (n= 49, N in [67,130]): ratio_of_medians=0.9604 median_of_ratios=0.9277 mean_percentile=0.4329
-  N-quartile 3 (n= 50, N in [132,193]): ratio_of_medians=0.9871 median_of_ratios=0.9820 mean_percentile=0.4808
-  N-quartile 4 (n= 51, N in [196,256]): ratio_of_medians=0.8915 median_of_ratios=0.8984 mean_percentile=0.3720
+  IID NULL   ratio_of_medians=0.9630 median_of_ratios=0.9297 median_ratio_p5=1.3977 mean_pct=0.4306 median_pct=0.3650
+  CORR NULL  ratio_of_medians=0.9781 median_of_ratios=0.9739 mean_pct=0.4501 median_pct=0.4150
+  Nq1 (n= 50, N=[2,65]): iid_ratio=0.9489 iid_pct=0.4017  |  corr_ratio=0.9653 corr_pct=0.4175
+  Nq2 (n= 49, N=[67,130]): iid_ratio=0.9270 iid_pct=0.3700  |  corr_ratio=0.9784 corr_pct=0.4150
+  Nq3 (n= 50, N=[132,193]): iid_ratio=0.9975 iid_pct=0.4850  |  corr_ratio=0.9877 corr_pct=0.4625
+  Nq4 (n= 51, N=[196,256]): iid_ratio=0.9123 iid_pct=0.2933  |  corr_ratio=0.9542 corr_pct=0.3600
 
 Saved raw arrays to p4_matched_N_trained_results.npz

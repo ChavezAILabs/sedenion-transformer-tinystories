@@ -444,16 +444,29 @@ literature counts.*
    between them is target geometry (4-dim eigenspace vs. 1-dim needle), not
    steering. **The trained question is now answered too**, against real
    TinyStories val batches and the actual trained checkpoints (Drive access
-   set up 2026-07-28/29): **S's real trained keys land far closer to the
-   floor than matched-N chance, robustly across all three seeds and stable
-   or strengthening across the full N range (pooled median percentile 0.03,
-   z≈−25 vs. the uniform null) — a genuine, behavioral steering effect, not
-   a small-N artifact.** X shows a much smaller, N-concentrated effect
-   (strongest at small N, fading toward null-consistent by the top N
-   quartile — the signature of noise/artifact, not population-level
-   steering) — see §12.5 for the full breakdown and the one honest surprise
-   this run turned up (a real but *smaller* anti-chance skew for **S at
-   init too**, unexplained, flagged not buried).
+   set up 2026-07-28/29), using two nulls: a naive i.i.d.-unit-vector one
+   and a **correlation-matched** one (real, unrelated key windows — needed
+   because real same-sequence keys are positively correlated, which biases
+   the i.i.d. null; confirmed directly by the correlation-matched null
+   recovering percentile≈0.5 at init for both variants, where the i.i.d.
+   null does not). **Under the validated correlation-matched null, both S
+   and X's trained keys beat chance at finding low-r² partners — S's effect
+   is real and roughly 1.8× X's** (z≈−6.4 vs. z≈−3.6), not the order-of-
+   magnitude gap the i.i.d. null alone suggested. **Both effects are highly
+   significant and small in absolute size** — median percentile 0.41 (S)
+   and 0.45 (X) against a no-steering expectation of 0.50, i.e. S beats
+   ~59% of matched-correlation alternatives and X beats ~55%, not "always"
+   for either. **Engagement alone therefore does not by itself account for
+   the S-vs-X extrapolation dissociation (§4/§8) — both variants engage the
+   mechanism to a real, measurable, and broadly similar degree; that link
+   is open, not established, and no framing to the contrary should be
+   carried forward.** This is the pre-registered rule's third branch, "both
+   steer; compare magnitudes," not the second. See §12.5 for the full
+   breakdown, both nulls side by side, and how the
+   correlation-matched null also resolved (not just flagged) the session's
+   one surprise — a real anti-chance skew for **S at init too** under the
+   i.i.d. null, now confirmed to be exactly the correlation-penalty effect
+   that motivated building the second null in the first place.
 5. **Seed variance in the dense family is large** — D0p ppl@512 swings 46%
    between seeds — which sets a floor on readable margins for any dense
    comparison.
@@ -465,7 +478,7 @@ literature counts.*
 
 | item | cost | blocks | status |
 |---|---|---|---|
-| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **CLOSED, both init and trained (2026-07-29)** — S's global infimum is a closed-form theorem (`EIGENTHEORY_findings_2026-07-27.md` §5); X's init-time accessibility was measured (§12.2) and null-corrected (§12.4) — neither variant beats chance untrained. **Trained-checkpoint question answered in §12.5**: real Drive-synced checkpoints (`paul@venicedispatch.info` account) + real TinyStories val batches, layer 0 — S's trained keys land far closer to the floor than matched-N chance (robust across seeds and N); X shows a much weaker, small-N-concentrated effect consistent with noise rather than population-level steering. Trajectory (early/mid/late) checked and found unavailable — `phase4_grid.py` only ever kept a single rolling final checkpoint, no intermediates exist on Drive for any S/X run. |
+| Constrained-infimum check (can't vs doesn't) | inference only | §8.1 framing | **CLOSED, both init and trained (2026-07-29)** — S's global infimum is a closed-form theorem (`EIGENTHEORY_findings_2026-07-27.md` §5); X's init-time accessibility was measured (§12.2) and null-corrected (§12.4) — neither variant beats chance untrained. **Trained-checkpoint question answered in §12.5**: real Drive-synced checkpoints (`paul@venicedispatch.info` account) + real TinyStories val batches, layer 0, under both an i.i.d. null and a correlation-matched null (the latter validated as unbiased by recovering percentile≈0.5 at init for both variants) — **both S and X's trained keys beat chance under the validated null, S's effect ≈1.8× X's**, decision-rule branch 3 ("both steer, compare magnitudes"). Trajectory (early/mid/late) checked and found unavailable — `phase4_grid.py` only ever kept a single rolling final checkpoint, no intermediates exist on Drive for any S/X run. |
 | cond(L_x) at the real init distribution | inference only | §8.2 attribution | **done** 2026-07-26 — confirmed real, not a sampling artifact (`PHASE5_stage0_findings_2026-07-26.md` §2); ~15× gap at real init matches the free-sphere prediction to ~1% |
 | ~~Verify §8.3 against repo enumerator~~ | minutes | prior-art §8.4.8 | **done** 2026-07-27, this pass — see §8.3 |
 | A3-revised γ dose-response | inference only, plausibly free tier | — | open |
@@ -947,7 +960,30 @@ across 3 seeds, key norms grow from init to trained by **+5.2% for S**
 ∼2.7× larger relative drift for X. Confirmed inert to the r² metric itself,
 reported as a standalone descriptive fact.
 
-**3. Stratified by N-quartile, not pooled** — see the table below.
+**Follow-up question (chat-side review, 2026-07-29): is this normalization
+in the forward pass, or only in the measurement code?** If it lived only
+in this analysis script and not in `K3Attention` itself, the key-norm
+drift above would act on the score the *real model* actually optimizes
+while being invisible to this control — a real gap. **Checked directly
+against `phase4_layers.py`: it is in the forward pass, unambiguously.**
+`K3Attention.scores()` (lines 104–126) computes `den = (q.pow(2).sum(-1)...
+* k.pow(2).sum(-1)...)` and `r2 = num / den` — this is the *same* method
+`forward()` calls (`_, s = self.scores(x, pos_offset)`) to produce the
+score `s = -gamma * r2` that gets soft-maxed into the real attention
+weights, both during training and in this script's own extraction (which
+reads `attn.wq`/`attn.wk`/`attn._rotate` directly, not a separate
+reimplementation). There is no unnormalized code path anywhere in the
+model — `scores()` *is* the forward pass's score computation. So the r²
+this control measures is exactly what the model trains under and what its
+attention weights are computed from; the key-norm drift is real and
+correctly logged as inert to r² specifically because the model's own
+normalization (not this script's) already divides it out at every
+application, training included.
+
+**3. Stratified by N-quartile, not pooled** — see the tables below. This
+item's spec also carried a proposed second null (see "correlation-matched
+null" below), which turned out to matter more than the stratification
+itself.
 
 **4. Trajectory (early/mid/late checkpoints) — checked, unavailable.**
 `phase4_grid.py`'s checkpoint save (`save_ckpt_atomic`) writes a single
@@ -961,10 +997,19 @@ substituted — flagged as a real limit on what this pass can settle (see
 "what this does and doesn't resolve" below).
 
 **5. Empirical percentile readout**, alongside both ratio conventions
-(§12.4(iii)): for each point, the fraction of its own 100 matched-N null
+(§12.4(iii)): for each point, the fraction of its own matched-N null
 trials at least as low as the actual real-key minimum. Under no steering
 this is Uniform(0,1); low values mean real keys beat chance (steering
-toward low r²), high values mean real keys land worse than chance.
+toward low r²), high values mean real keys land worse than chance. **Trial
+count raised 100→300** (chat-side review, 2026-07-29 — 100 trials put
+extreme points near the percentile resolution floor, where "just below
+all draws" and "far below all draws" both read as ~0.00–0.03 and can't be
+told apart) and a **floor-immune magnitude statistic** added alongside the
+rank-based percentile: `ratio_p5 = actual_min / (5th percentile of the
+null draws)`, which doesn't saturate the way a rank does. For trained S
+under the i.i.d. null, `ratio_p5` ≈ 0.92–0.95 (pooled median 0.935) —
+consistent with a true rank of roughly 2–5%, confirming the percentile≈0.03
+reading is not a floor artifact of the trial count.
 
 **Layer 0 only** (matches every other headline number in this project —
 the r²_min@0/@end table, PHASE5_stage0's early-lock trajectory, most of
@@ -974,108 +1019,179 @@ a fresh untrained init differs from it by 0.15 max absolute difference —
 confirms the "trained" condition is really trained, not silently falling
 back to a fresh init on a load failure.
 
-**Pooled results (3 seeds × 200 points = 600 per condition):**
+**The correlation-matched null (chat-side review item 3, 2026-07-29) — the
+single most consequential addition this pass.** The i.i.d. unit-vector
+null treats the N real keys at a causal position as if they were N
+independent draws. They aren't: keys at nearby positions in one real
+sequence, through one set of shared weights, are positively correlated.
+**The minimum of N positively-correlated draws is stochastically *larger*
+(less extreme) than the minimum of N i.i.d. draws with the same marginal
+distribution** — correlated samples cluster instead of spreading out to
+explore the tails independently. So *absent any steering*, real keys are
+expected to land *worse* than the i.i.d. null, and a percentile above 0.5
+is the **correct null expectation**, not a defect. This is exactly the
+account offered (as a plausible, unconfirmed guess) for `init S`'s
+above-0.5 skew below — and it is now directly testable.
 
-| condition | median ratio | mean percentile | median percentile | z vs. uniform(0.5)† |
+Built a second null: instead of N independent random unit vectors, draw N
+real keys from an **unrelated (batch, offset) window of the same length**
+— a genuine, naturally-correlated block of real keys with no relationship
+to this specific query (different story, same absolute causal positions
+so the same rotation angles apply). Under this null, percentile 0.5 *is*
+the correct no-steering reference directly, with no correlation penalty to
+correct for.
+
+**Result: at init, the correlation-matched null recovers percentile ≈ 0.5
+almost exactly, for both variants, all three seeds** (pooled `init S`:
+mean pct 0.497, z=−0.25; `init X`: mean pct 0.495, z=−0.43 — both fully
+consistent with pure noise). **This directly confirms the correlation-
+penalty explanation** — it is not a guess anymore. The i.i.d. null's
+init skew (S: z=+10.0, X: z=+3.5) is now understood precisely: it is the
+correlation penalty, present at both variants, larger for S than X
+(plausibly because S's exact-norm-preserving `R_8` rotation induces more
+regular structure among nearby real keys than X's rotation, which is
+documented elsewhere in this project — `phase4_X_positional_check.py` —
+to *not* preserve norms or the shared-phase null cleanly; not chased
+further here).
+
+**Pooled results, both nulls (3 seeds × 200 points = 600 per condition):**
+
+| condition | i.i.d. z | i.i.d. median pct | corr-matched z | corr-matched median pct |
 |---|---|---|---|---|
-| init S | 1.045 | 0.621 | 0.670 | +10.3 |
-| init X | 1.018 | 0.530 | 0.540 | +2.5 |
-| trained S | 0.653 | 0.210 | 0.030 | −24.6 |
-| trained X | 0.940 | 0.428 | 0.370 | −6.1 |
+| init S | +10.0 | 0.672 | **−0.25** | **0.490** |
+| init X | +3.5 | 0.573 | **−0.43** | **0.495** |
+| trained S | −24.5 | 0.030 | **−6.4** | **0.405** |
+| trained X | −5.8 | 0.378 | **−3.6** | **0.450** |
 
-† treats the 600 points as independent for a rough z-gauge — they aren't
-fully (points share batches/models), so this **overstates formal
-significance** and should be read as a descriptive signal-strength ranking,
-not a validated p-value.
+† z treats the 600 points as independent for a rough gauge — they aren't
+fully (points share batches/models), so this overstates formal
+significance and should be read as a descriptive ranking, not a validated
+p-value; the *init* rows above (landing at |z|<0.5 under the corr-null
+against a construction that should be unbiased) are themselves a rough
+empirical check that this approximation isn't wildly miscalibrated.
 
-**N-quartile breakdown (pooled 3 seeds) — this is where item 3 earns its
-keep:**
+**This revises the trained reading, not just the init one.** Under the
+i.i.d. null, trained X looked close to noise (small pooled deviation,
+concentrated at small N — see below). Under the correlation-matched null
+— the one now validated as unbiased at init — **trained X shows a real,
+consistent, three-seeds-agree deviation (z=−3.6, ~55% of matched-
+correlation alternatives beaten), smaller than S's (z=−6.4, ~60% beaten)
+by roughly a factor of 1.8, not the 4–9× gap the i.i.d. null suggested.**
+Both are now `< 0.5`. This is the pre-registered rule's **third branch —
+"both steer; compare magnitudes"** — read directly off the more rigorous
+instrument, not forced into the second branch as the first draft of this
+section did.
 
-| condition | Nq1 (N≈1–63) | Nq2 (N≈64–129) | Nq3 (N≈130–193) | Nq4 (N≈194–256) |
+**Effect size, stated explicitly alongside significance (chat-side review,
+2026-07-29) — these are highly significant but small effects, and neither
+number alone should stand in for the other.** Under the correlation-
+matched null, median percentile is **0.41 for S and 0.45 for X, against a
+no-steering expectation of 0.50** — absolute deviations of 0.09 and 0.05.
+`z=−6.4` and `z=−3.6` describe how *reliably* those small deviations recur
+across 600 pooled points (and, per the caveat above, likely overstate
+formal significance further since the points aren't fully independent);
+they say nothing about *how far* any single real key typically sits from
+a typical unrelated one. Reading percentile 0.41 concretely: **S's real
+keys beat about 59% of matched-correlation alternatives, not "always" or
+"by a wide margin."** X's beat about 55%. Both are real, reproducible
+departures from chance — and both are modest ones. A z-score this large
+from an effect this small is a function of pooling 600 points, not a
+license to describe either effect as large.
+
+**N-quartile breakdown, both nulls (pooled 3 seeds):**
+
+| condition | Nq1 | Nq2 | Nq3 | Nq4 |
 |---|---|---|---|---|
-| trained S, median ratio | 0.687 | 0.703 | 0.626 | **0.598** |
-| trained S, median pct | 0.06 | 0.03 | 0.02 | **0.02** |
-| trained X, median ratio | 0.878 | 0.963 | 0.947 | 0.962 |
-| trained X, median pct | **0.31** | 0.43 | 0.37 | 0.44 |
+| trained S, i.i.d. median pct | 0.06 | 0.03 | 0.02 | **0.02** |
+| trained S, corr median pct | 0.33 | 0.44 | 0.44 | 0.41 |
+| trained X, i.i.d. median pct | **0.31** | 0.43 | 0.37 | 0.44 |
+| trained X, corr median pct | 0.37 | 0.44 | 0.41 | 0.38 |
 
-**S's effect is flat-to-strengthening across the entire N range** — if
-anything the median ratio gets *more* extreme at high N (0.687→0.598), the
-opposite of the "min-over-N mechanically converges to the floor for
-everyone as N grows" artifact the spec warned to check for. That pattern
-(surviving, not eroding, as the search space widens) is the signature of a
-real population-level effect: many of S's real keys are landing near the
-manifold, not just one lucky one at small N. **X's effect runs the other
-way** — strongest (median pct 0.31) at the smallest N, where a single
-favorable draw among few keys has the most leverage, and fades toward
-null-consistent (0.37–0.44) at every larger N-quartile. That is close to
-the textbook signature of a small-N artifact rather than a robust,
-population-wide steering signal.
+Under the i.i.d. null, **S's effect is flat-to-strengthening across the
+entire N range** — the median ratio if anything gets more extreme at high
+N (0.687→0.598 across quartiles) — the opposite of the "min-over-N
+mechanically converges to the floor for everyone" artifact the spec warned
+about, and the signature of a real, population-wide effect rather than one
+lucky key at small N. X's i.i.d.-null profile is less clean (strongest at
+Nq1, closer to null at Nq2–4).
 
-**Applying the pre-registered decision rule to the pooled numbers, then
-reading the stratified breakdown as the tie-breaker it was built for:**
-taken literally, trained S (0.653) is clearly `< 1` and trained X (0.940)
-is not exactly `≈ 1` either — so the pooled numbers alone sit in the third
-branch, "both < 1, compare magnitudes," not the second. But the
-N-stratified pattern above is exactly the diagnostic the spec asked for to
-distinguish those branches: S's deviation is N-independent (behavioral),
-X's is concentrated at small N and decays toward the null as N grows (the
-profile of an artifact). **Reading: S steers, robustly and by a large
-margin; X's small pooled deviation is better explained as a small-N
-artifact than genuine population-level steering — closer in spirit to
-"doesn't" than to "both steer comparably," but not the clean `X ≈ 1`
-the rule's second branch describes at face value.** This nuance is
-reported rather than forced into one branch label, per the rule's own
-"compare magnitudes" instruction for exactly this kind of in-between case.
+**Correction to the first draft's reading of that pattern (chat-side
+review, 2026-07-29): "fades toward null at large N" does not by itself
+prove artifact.** The same min-over-N convergence that makes S's flat
+profile diagnostic of a real effect would *also* erode a weak-but-genuine
+effect at large N — the convergence is symmetric and doesn't distinguish
+"never real" from "real but too weak to survive the squeeze." Under the
+correlation-matched null, the N-profile for both S and X is noisier and
+does not show S's clean flat/strengthening pattern either (200 trials
+drawn from a ~300-real-window pool, smaller effect sizes throughout) — so
+the N-stratification argument, on its own, is weaker evidence than the
+first draft treated it as. **The correlation-matched null's pooled result
+is now the primary basis for "X steers too, less than S," not the
+N-profile**, which is presented here as a secondary, i.i.d.-null-only
+diagnostic rather than independent proof.
 
 **Chat-side prediction, recorded before the run: "S below 1, X near 1 —
-the 'doesn't survives' branch. Moderate confidence."** Substantially
-correct in direction and in the size gap between S and X (S's effect is
-roughly 4× X's in z-magnitude, 9× in how far the median percentile sits
-from 0.5), less clean than "X near 1" stated flatly — X's pooled number
-(0.940, z≈−6) is a real, non-trivial deviation on its own, and only the
-N-stratification clarifies why it likely isn't the same kind of effect as
-S's. The recorded "live alternative" ("both near 1 even trained... H4c's
-descent doesn't translate into keys landing nearer the floor than chance")
-is not what happened for S (S's shift is enormous, not near 1) but is
-closer to what happened for X.
+the 'doesn't survives' branch. Moderate confidence."** Right on direction
+(S's effect is real and larger than X's, confirmed under the more
+rigorous null too) and right to flag only moderate confidence. **Not borne
+out at face value**: under the correlation-matched null — the one the
+init check validates as the fair reference — X is not `≈ 1` (`≈0.5` in
+percentile terms); it shows a real, reproducible, smaller effect. The
+recorded "live alternative" ("both near 1 even trained... H4c's descent
+doesn't translate into keys landing nearer the floor than chance") is
+closer to wrong for both variants than either extreme reading — **the
+result that actually obtained is a third option neither framing stated
+outright: both variants steer, real and reproducible for both, S roughly
+1.8× X.**
 
-**One honest surprise, flagged rather than smoothed over: `init S` is not
-a clean `≈1` calibration point.** Its pooled z is +10.3 (median percentile
-0.67) — real keys at *untrained* init land *worse* than matched-N chance
-for S specifically, a moderate but statistically non-trivial skew in the
-opposite direction from the trained effect. `init X`'s skew is much
-weaker (z=+2.5). This did not show up in §12.4's synthetic-input run
-(ratios there were 0.98–1.05 for both variants) or in this run's own
-pooled *ratio* numbers (1.045, 1.018 — unremarkable on their own), only in
-the percentile readout, which is more sensitive by construction. Plausible
-explanation, not confirmed: real (non-isotropic) token-embedding
-statistics passed through a fixed random projection don't resemble
-free-sphere sampling even at init — a mechanism this project already has
-independent evidence for (`phase4_init_r2_check.py`'s original finding
-that real q,k at init don't match free-sphere predictions). **This is why
-the before/after-training delta, not the absolute distance from `≈1` or
-`≈0.5`, is the safer comparison**: S moves from percentile 0.67 (init) to
-0.03 (trained) — an enormous swing regardless of where its own null
-baseline sits — while X moves from 0.54 to 0.37, real but far smaller.
-Not chased further this pass; flagged as an open question rather than
-either dismissed or overinterpreted.
+**The `init S` skew: no longer a "plausible, unconfirmed" surprise — now a
+confirmed, understood one.** The correlation-matched null recovering
+percentile ≈0.5 at init for both variants directly confirms the
+correlation-penalty account above; it is not the `phase4_init_r2_check.py`
+"real embeddings don't resemble free-sphere sampling" mechanism this
+section originally guessed at (that mechanism is still true and relevant
+elsewhere in this project, just not the explanation for *this* number).
+The i.i.d. null remains useful — its own before/after delta (S: 0.67→0.03;
+X: 0.57→0.38) still shows the same qualitative pattern — but the
+correlation-matched null is the more defensible number to lead with going
+forward, since it needs no delta workaround: its own zero point is
+directly interpretable.
+
+**Caveat on `init S`'s "3 seeds," caught on review, not by an outside
+check: they were not 3 independent random inits in the first version of
+this script.** It originally seeded the init-mode model by
+`1000+batch_seed` (`batch_seed` ∈ 0–4), never by the outer `seed`
+(1337/1338/1339) loop variable — so for **S specifically**, whose
+construction has no seed-dependence at all (unlike X, whose structure
+tensor `shuffled_structure_tensor(seed)` genuinely differs per seed even
+though its `wq`/`wk` weights don't), all three `init S` "seed" rows shared
+*bit-identical* `wq`/`wk`/`wv`/`wo`/`gamma` — only the real-data batch and
+point sample differed. **Fixed** (now `seed*10+batch_seed`, giving
+genuinely independent inits per seed) **and rerun** — the numbers above
+are from the corrected version; the anti-chance skew held up under
+independent inits (i.i.d. pooled z moved from +10.3 to +10.0, unchanged
+within noise), so this was a real methodological gap, not one that changed
+the finding. Does not touch the trained comparison (S and X trained each
+come from 3 genuinely independently-trained checkpoints, unaffected by
+this bug either way).
 
 **What this does and doesn't resolve.** It answers the "trained" half of
-can't-vs-doesn't for the *final* state: S's trained keys clearly beat
-chance at finding low-r² partners; X's, at most, weakly and in a pattern
-more consistent with small-N noise than real steering. **It does not
-distinguish "X steered early (Stage 0 item 1's flat-after-one-move log-
-slope) and then stopped" from "X never steered at all"** — that needs
-early/mid/late checkpoints, confirmed unavailable (item 4). What it does
-add to that question: if X had genuinely steered early and then plateaued,
-its *final* trained state should still show a clear, S-like steering
-signal (the achieved position wouldn't un-steer itself) — instead the
-final state shows almost none. That favors "X's early move was not
-real steering" over "X steered then stopped," without being a direct
-trajectory test.
+can't-vs-doesn't for the *final* state, under the now-validated
+correlation-matched null: **both S and X's trained keys beat chance at
+finding low-r² partners; S's effect is real and roughly 1.8× X's, not an
+order of magnitude larger as the i.i.d.-null-only reading first
+suggested.** It does not distinguish "X steered early (Stage 0 item 1's
+flat-after-one-move log-slope) and then stopped at a smaller magnitude
+than S" from "X steered weakly the whole time" — that needs early/mid/late
+checkpoints, confirmed unavailable (item 4). What it does add: X's final
+state shows a real, if modest, steering signal — consistent with *some*
+version of Stage 0 item 1's early move having been genuine, just smaller
+and/or less sustained than S's, rather than the "X never steered at all"
+reading the first draft of this section leaned toward.
 
-**Files**: `phase4_matched_N_trained.py` (script), `p4_matched_N_trained_results.npz`
-(raw per-point arrays, all 12 conditions), `p4_checkpoints/` and
+**Files**: `phase4_matched_N_trained.py` (script, now with both nulls and
+independent-init seeding), `p4_matched_N_trained_results.npz` (raw
+per-point arrays, all 12 conditions, both nulls), `p4_checkpoints/` and
 `p4_val_data/` (local copies of the Drive-synced checkpoints and tokenized
 val set, gitignored, re-fetchable from `MyDrive/p4_runs_ts` +
 `MyDrive/zda_data_cache` on the `paul@venicedispatch.info` Drive account).

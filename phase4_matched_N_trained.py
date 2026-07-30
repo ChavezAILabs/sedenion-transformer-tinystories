@@ -41,6 +41,27 @@ seeing data):
   both ratio_null ~= 1   -> neither steers; no behavioral difference
   S < 1, X ~= 1           -> S steers, X does not; "doesn't" is supported
   both < 1                -> both steer; compare magnitudes
+
+2026-07-29 amendments (chat-side review of the first trained-checkpoint
+pass, RESULTS_phase4.md SS12.5), all additive -- nothing above is revised:
+  a. init-mode seeding fixed: was `1000+batch_seed` (independent of the
+     RUN seed), so S's "3 seeds" shared bit-identical weights and only
+     varied by data batch. Now `seed*10+batch_seed` -- genuinely
+     independent inits per seed.
+  b. i.i.d.-unit-vector null trials raised 100->300, and a null_p5 (5th
+     percentile of the null draws, not just the median) is now tracked
+     per point, giving a floor-free ratio (actual_min/null_p5) that
+     doesn't saturate the way percentile-vs-100-trials does at extreme
+     points.
+  c. A second, CORRELATION-MATCHED null added alongside the i.i.d. one:
+     instead of N independent random unit vectors, draw N real keys from
+     an unrelated (batch, offset) window of the same length -- a real,
+     naturally-correlated block of keys with no relationship to the
+     query's own true keys. Under the correlation-matched null,
+     percentile 0.5 IS the correct no-steering reference (unlike the
+     i.i.d. null, whose reference point is shifted above 0.5 by the
+     positive correlation among real same-sequence keys -- see
+     RESULTS_phase4.md SS12.5 for the argument and the empirical check).
 """
 import argparse
 import sys
@@ -59,7 +80,8 @@ CKPT_DIR = r"C:\dev\projects\apm-agi_tests\p4_checkpoints"
 N_ALG = 16
 N_BATCHES = 5
 POINTS_PER_BATCH = 40
-N_RANDOM_TRIALS = 100
+N_RANDOM_TRIALS = 300
+N_CORR_TRIALS = 200
 EPS = 1e-12
 
 
@@ -147,12 +169,23 @@ def run_condition(variant, seed, mode, cfg, ds):
                 if mode == "trained" else None)
     T = structure_tensor(16) if variant == "S" else shuffled_structure_tensor(seed)
 
-    actual_mins, floors, null_mins, ratios, percentiles = [], [], [], [], []
+    (actual_mins, floors, null_mins, ratios, percentiles, ratios_p5,
+     corr_mins, corr_ratios, corr_percentiles) = ([], [], [], [], [], [],
+                                                   [], [], [])
     Ns, real_key_norms = [], []
 
+    # Phase 1: compute (q_rot, k_rot) for all N_BATCHES batches up front,
+    # so the correlation-matched null (phase 2) can draw "unrelated
+    # window" foils from ANY of the 5 batches, not just already-seen ones.
+    batch_q_rot, batch_k_rot = {}, {}
     for batch_seed in range(N_BATCHES):
         if mode == "init":
-            torch.manual_seed(1000 + batch_seed)   # fresh init per batch, as SS12.2/SS12.4
+            # seed depends on the RUN seed too (not just batch_seed) so
+            # each of the 3 "seeds" is a genuinely independent random
+            # init, not 3 real-data replicates against one fixed init --
+            # caught on review (RESULTS_phase4.md SS12.5 caveat) for S,
+            # which (unlike X) has no other seed-dependence to fall back on
+            torch.manual_seed(seed * 10 + batch_seed)
             model = build_model(variant, seed, cfg, ckpt_path=None)
         else:
             if batch_seed == 0:
@@ -172,9 +205,12 @@ def run_condition(variant, seed, mode, cfg, ds):
             k = attn.wk(xf).view(xf.shape[0], xf.shape[1], cfg["n_heads"],
                                  N_ALG).transpose(1, 2)
             pos = torch.arange(cfg["ctx"], dtype=torch.float32)
-            q_rot = attn._rotate(q, pos).numpy()
-            k_rot = attn._rotate(k, pos).numpy()
+            batch_q_rot[batch_seed] = attn._rotate(q, pos).numpy()
+            batch_k_rot[batch_seed] = attn._rotate(k, pos).numpy()
 
+    # Phase 2: sample points per batch and compute actual/floor/both nulls.
+    for batch_seed in range(N_BATCHES):
+        q_rot, k_rot = batch_q_rot[batch_seed], batch_k_rot[batch_seed]
         rng = np.random.default_rng(seed * 1000 + batch_seed)
         b_idx = rng.integers(0, cfg["batch_size"], POINTS_PER_BATCH)
         h_idx = rng.integers(0, cfg["n_heads"], POINTS_PER_BATCH)
@@ -190,19 +226,39 @@ def run_condition(variant, seed, mode, cfg, ds):
             actual_min = float(actual_r2.min())
             floor = achievable_floor(T, P)
 
+            # -- i.i.d. unit-vector null (original, target-geometry) --
             trial_mins = np.empty(N_RANDOM_TRIALS)
             for trial in range(N_RANDOM_TRIALS):
                 rand_Q = rng.normal(size=(N, N_ALG))
                 rand_Q /= np.linalg.norm(rand_Q, axis=-1, keepdims=True) + EPS
                 trial_mins[trial] = r2_of(T, P, rand_Q).min()
             random_N_min = float(np.median(trial_mins))
+            null_p5 = float(np.percentile(trial_mins, 5))
             percentile = float((trial_mins <= actual_min).mean())
+
+            # -- correlation-matched null (real, unrelated windows) --
+            corr_trial_mins = np.empty(N_CORR_TRIALS)
+            other_bs = [x for x in range(cfg["batch_size"]) if x != bb]
+            for trial in range(N_CORR_TRIALS):
+                b2 = other_bs[rng.integers(0, len(other_bs))]
+                bs2 = rng.integers(0, N_BATCHES)   # any already-computed batch
+                k_pool = batch_k_rot[bs2]
+                max_off = cfg["ctx"] - N
+                off = rng.integers(0, max_off + 1) if max_off > 0 else 0
+                foil_keys = k_pool[b2, hh, off:off + N, :]
+                corr_trial_mins[trial] = r2_of(T, P, foil_keys).min()
+            corr_null_med = float(np.median(corr_trial_mins))
+            corr_percentile = float((corr_trial_mins <= actual_min).mean())
 
             actual_mins.append(actual_min)
             floors.append(floor)
             null_mins.append(random_N_min)
             ratios.append(actual_min / (random_N_min + EPS))
+            ratios_p5.append(actual_min / (null_p5 + EPS))
             percentiles.append(percentile)
+            corr_mins.append(corr_null_med)
+            corr_ratios.append(actual_min / (corr_null_med + EPS))
+            corr_percentiles.append(corr_percentile)
             Ns.append(N)
 
     return {
@@ -211,7 +267,11 @@ def run_condition(variant, seed, mode, cfg, ds):
         "floors": np.array(floors),
         "null_mins": np.array(null_mins),
         "ratios": np.array(ratios),
+        "ratios_p5": np.array(ratios_p5),
         "percentiles": np.array(percentiles),
+        "corr_null_mins": np.array(corr_mins),
+        "corr_ratios": np.array(corr_ratios),
+        "corr_percentiles": np.array(corr_percentiles),
         "Ns": np.array(Ns),
         "key_norms": np.array(real_key_norms),
     }
@@ -221,25 +281,30 @@ def summarize(res, label):
     Ns = res["Ns"]
     ratios = res["ratios"]
     percentiles = res["percentiles"]
+    ratios_p5 = res["ratios_p5"]
+    corr_ratios = res["corr_ratios"]
+    corr_percentiles = res["corr_percentiles"]
     print(f"=== {label} ===")
     print(f"  n points: {len(ratios)}  N range {Ns.min()}-{Ns.max()}")
     print(f"  key norms: median={np.median(res['key_norms']):.4f} "
           f"IQR=[{np.percentile(res['key_norms'],25):.4f}, "
           f"{np.percentile(res['key_norms'],75):.4f}]")
-    print(f"  POOLED ratio_of_medians={np.median(res['actual_mins'])/np.median(res['null_mins']):.4f} "
+    print(f"  IID NULL   ratio_of_medians={np.median(res['actual_mins'])/np.median(res['null_mins']):.4f} "
           f"median_of_ratios={np.median(ratios):.4f} "
-          f"mean_percentile={np.mean(percentiles):.4f}")
+          f"median_ratio_p5={np.median(ratios_p5):.4f} "
+          f"mean_pct={np.mean(percentiles):.4f} median_pct={np.median(percentiles):.4f}")
+    print(f"  CORR NULL  ratio_of_medians={np.median(res['actual_mins'])/np.median(res['corr_null_mins']):.4f} "
+          f"median_of_ratios={np.median(corr_ratios):.4f} "
+          f"mean_pct={np.mean(corr_percentiles):.4f} median_pct={np.median(corr_percentiles):.4f}")
     quartile_edges = np.percentile(Ns, [25, 50, 75])
     bins = np.digitize(Ns, quartile_edges)
     for qb in range(4):
         mask = bins == qb
         if mask.sum() == 0:
             continue
-        print(f"  N-quartile {qb+1} (n={mask.sum():3d}, "
-              f"N in [{Ns[mask].min()},{Ns[mask].max()}]): "
-              f"ratio_of_medians={np.median(res['actual_mins'][mask])/np.median(res['null_mins'][mask]):.4f} "
-              f"median_of_ratios={np.median(ratios[mask]):.4f} "
-              f"mean_percentile={np.mean(percentiles[mask]):.4f}")
+        print(f"  Nq{qb+1} (n={mask.sum():3d}, N=[{Ns[mask].min()},{Ns[mask].max()}]): "
+              f"iid_ratio={np.median(ratios[mask]):.4f} iid_pct={np.median(percentiles[mask]):.4f}  |  "
+              f"corr_ratio={np.median(corr_ratios[mask]):.4f} corr_pct={np.median(corr_percentiles[mask]):.4f}")
     print()
 
 

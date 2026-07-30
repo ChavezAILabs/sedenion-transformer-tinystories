@@ -70,6 +70,35 @@ Consistent with, and adds a mechanistic texture to, the standing "training
 exploits S's manifold, doesn't for X" reading already on record (session
 close 2026-07-24 addendum).
 
+**Update, 2026-07-29 (chat-side review, following `RESULTS_phase4.md`
+§12.5's trained-checkpoint matched-N null control):** the "training
+exploits S's manifold, doesn't for X" framing above is revised. §12.5's
+correlation-matched null — validated as unbiased by recovering
+percentile≈0.5 at real init for both variants — found that **X's *final*
+trained keys do show a real, reproducible (if modest) steering effect**
+(median percentile 0.45 vs. a no-steering expectation of 0.50, z≈−3.6,
+roughly 55% of matched-correlation alternatives beaten), smaller than S's
+but not absent. That rules out "X never engaged the mechanism at all."
+
+**This is an inference from end-state data, not a direct trajectory
+observation, and is labeled as such.** The flat slope[2:] finding above
+*is* trajectory data (r²_min logged at every eval throughout training).
+The steering-vs-chance finding in §12.5 is *not* — it was measured only
+at the final checkpoint, because (§12.5 item 4) no intermediate
+checkpoints exist anywhere on Drive for any S/X run; the two facts are
+being combined by inference, not read off one continuous record. With
+that caveat stated plainly: the combination — a small one-time drop by
+eval 1, a flat r²-descent slope afterward, *and* a real-if-modest
+steering effect still present at the final step — now reads more
+consistently as **"X engaged the mechanism early, modestly, and then
+plateaued"** than as "X made some non-manifold-related adjustment and
+never meaningfully engaged." The trajectory data alone cannot distinguish
+these two readings (§12.5's own conclusion); it is the end-state result
+that tips the inference toward the former. Whether the plateau reflects a
+capacity limit, a training-dynamics artifact, or something else remains
+open — this update narrows *what* plateaued (partial engagement, not
+zero engagement), not *why*.
+
 ---
 
 ## 2. cond(L_x) at the real init q,k distribution
