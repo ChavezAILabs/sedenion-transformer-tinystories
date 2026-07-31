@@ -1,0 +1,149 @@
+{
+  "_provenance": "APM Stage A Priority A, 2026-07-31. Produced by phase4_priorityA_crossing.py on Colab A100, checkpoints from MyDrive/p4_runs_ts, val data from MyDrive/zda_data_cache (byte-identical to local p4_val_data/val.bin, confirmed). ctx256/512/1024 self-checked exact against p4_artifacts/*/summary.json before trusting anything else. ctx4096/8192 use a smaller per-ctx batch size (see batch_size field) with proportionally more iters, holding N=256 examples fixed throughout -- disclosed in PHASE5_priorityA_crossing_2026-07-31.md. S/X ctx8192 not reachable on a 40GB A100 at any batch size (confirmed architectural: K3Attention.scores() needs prod and prod.pow(2) simultaneously resident, ~2x the (B,H,T,T,16) tensor's own size in peak memory).",
+  "results": {
+    "S_seed1337":  {"variant": "S",  "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 6.061, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 12.137, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 39.806, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 86.379, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 134.657, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "S_seed1338":  {"variant": "S",  "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 6.123, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 11.216, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 34.376, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 73.848, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 117.753, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "S_seed1339":  {"variant": "S",  "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 6.125, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 10.75, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 30.52, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 64.522, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 99.05, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "X_seed1337":  {"variant": "X",  "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 5.895, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 18.665, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 52.219, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 93.173, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 125.29, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "X_seed1338":  {"variant": "X",  "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 5.908, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 18.045, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 51.605, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 91.058, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 124.531, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "X_seed1339":  {"variant": "X",  "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 5.937, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 17.959, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 51.096, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 93.28, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 126.93, "batch_size": 2, "iters": 128},
+      "ctx8192": {"error": "OOM at batch_size=1 (floor) -- architectural ceiling, not reachable"}
+    }},
+    "D1_seed1337": {"variant": "D1", "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 5.198, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 8.673, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 24.628, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 53.595, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 78.987, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 98.594, "batch_size": 8, "iters": 32}
+    }},
+    "D1_seed1338": {"variant": "D1", "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 5.247, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 14.458, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 35.061, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 65.79, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 89.804, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 106.908, "batch_size": 8, "iters": 32}
+    }},
+    "D1_seed1339": {"variant": "D1", "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 5.238, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 16.904, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 42.442, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 75.928, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 98.569, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 112.902, "batch_size": 8, "iters": 32}
+    }},
+    "D0_seed1337": {"variant": "D0", "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 5.225, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 7.375, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 18.684, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 37.6, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 61.695, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 85.328, "batch_size": 8, "iters": 32}
+    }},
+    "D0_seed1338": {"variant": "D0", "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 5.246, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 7.817, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 19.462, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 40.638, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 69.454, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 97.645, "batch_size": 8, "iters": 32}
+    }},
+    "D0_seed1339": {"variant": "D0", "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 5.228, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 8.466, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 23.923, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 49.625, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 81.426, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 114.575, "batch_size": 8, "iters": 32}
+    }},
+    "D0p_seed1337": {"variant": "D0p", "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 5.33, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 12.553, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 35.055, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 68.097, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 94.89, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 114.555, "batch_size": 8, "iters": 32}
+    }},
+    "D0p_seed1338": {"variant": "D0p", "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 5.357, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 6.89, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 24.406, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 54.927, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 82.396, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 102.659, "batch_size": 8, "iters": 32}
+    }},
+    "D0p_seed1339": {"variant": "D0p", "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 5.334, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 10.068, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 27.239, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 58.62, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 85.593, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 108.111, "batch_size": 8, "iters": 32}
+    }},
+    "Q0_seed1337": {"variant": "Q0", "seed": 1337, "length_gen": {
+      "ctx256": {"ppl": 6.228, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 21.08, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 45.496, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 68.059, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 83.493, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 93.191, "batch_size": 8, "iters": 32}
+    }},
+    "Q0_seed1338": {"variant": "Q0", "seed": 1338, "length_gen": {
+      "ctx256": {"ppl": 6.287, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 20.962, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 47.18, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 71.99, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 87.508, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 98.035, "batch_size": 8, "iters": 32}
+    }},
+    "Q0_seed1339": {"variant": "Q0", "seed": 1339, "length_gen": {
+      "ctx256": {"ppl": 6.238, "batch_size": 8, "iters": 32},
+      "ctx512": {"ppl": 19.573, "batch_size": 8, "iters": 32},
+      "ctx1024": {"ppl": 44.965, "batch_size": 8, "iters": 32},
+      "ctx2048": {"ppl": 70.514, "batch_size": 8, "iters": 32},
+      "ctx4096": {"ppl": 86.323, "batch_size": 8, "iters": 32},
+      "ctx8192": {"ppl": 97.812, "batch_size": 8, "iters": 32}
+    }}
+  }
+}
