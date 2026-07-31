@@ -505,6 +505,19 @@ literature counts.*
   it — worth distinguishing when auditing multi-document, multi-session work,
   since the fix (propagate) is different from the fix for a fresh error
   (re-derive).
+- **A third instance of the same pattern** (chat-side observation,
+  2026-07-31): §9 limitation 5's "seed variance in the dense family is
+  large ... sets a floor on readable margins for any dense comparison" was
+  already on record before `PHASE5_priorityA_crossing_2026-07-31.md`'s
+  S-vs-D1 and Q0-ranking work, which independently re-derived essentially
+  the same conclusion (via per-seed sign counts showing 2/1 and 1/2 splits
+  on comparisons involving D0/D0p/D1/Q0) without citing it. The re-derivation
+  itself was still the right verification to do — but a fact established
+  correctly here sat uncited in a later document making exactly the claims
+  it would have flagged in advance. Three instances is enough to treat this
+  as a standing pre-write check: before drafting a new document's limitations
+  section, grep prior documents for the same claim rather than re-deriving
+  it cold.
 
 ---
 

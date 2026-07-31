@@ -145,6 +145,14 @@ D1 by 2.5% — a mean-driven pooled result at that rung), **2/3 at ctx=2048** (1
 monotonically strengthening, seed-consistent trend — 1 of 3 → 2 of 3 → 3 of 3 —
 not just a pooled-mean artifact, and per the methodology note above, the ctx=4096
 figure is confirmed **paired** evidence (identical windows across variants).
+**Statistical honesty at n=3:** a one-tailed sign test on 3/3 agreement has
+p=0.125 under the null — not significant at conventional thresholds, and this
+document does not claim significance for it. That is a real limit, not a reason
+to treat this on par with the normalized metric above: unlike that metric, this
+one is seed-consistent (monotonically 1→2→3 of 3, not a static 2/3 carried by one
+idiosyncratic seed) and confirmed paired. "Strongest single result in this
+document" describes its evidential weight *relative to everything else here*,
+under n=3's honest ceiling — not a claim of statistical significance.
 
 **Normalized metric (ppl@ctx / e^own-val-loss): the pooled mean also crosses, but
 per-seed this is NOT the clean, later-crossing story the first revision of this
@@ -227,13 +235,24 @@ caution — I'd keep it either way — but the memo has to say which it is"), so
 kept, stated explicitly as a caution rather than a seed-confirmed finding.
 
 **Adopted interpretable-range convention, going forward (a caution, not a
-seed-confirmed finding — see above):** claims about extrapolation *quality* are
-reliable through ctx≤1024 (Q0 still worst or near-worst); ctx=2048 is reportable
-with this caveat attached explicitly (Q0 has already passed D1 on the pooled
-mean, 2/3 seeds); ctx≥4096 is cost-and-collapse characterization only, not a
-quality comparison. This also weakens any claim about what happens to S-vs-D1 or
-S-vs-X beyond 4096 even if the memory ceiling is eventually lifted — that regime is
-already outside where ppl ordering means what it looks like it means.
+seed-confirmed finding — see above), with an explicit carve-out this document
+initially left implicit:** this convention governs **cross-field ordering
+claims** — ranking S/X/D0/D0p/D1/Q0 against each other as a group, which is
+exactly what Q0's contamination undermines, since it says the six-way ordering
+stops tracking capability once a no-interaction floor control starts winning.
+It does **not** govern **paired within-pair comparisons on identical windows** —
+a two-variant sign test (like S vs D1, above) is a different kind of claim, and a
+third variant's position moving elsewhere in the field does not undermine it.
+So: cross-field ordering is cost-only beyond ctx≈2048 (reliable through ctx≤1024,
+reportable-with-caveat at 2048); a **paired** two-variant comparison remains
+readable past that point, with the caveat that what it measures is **relative
+rate of collapse**, not capability — "D1 degrades less than S from ctx=1024 to
+ctx=4096" is a defensible paired-comparison statement inside the cost-only
+regime; "D1 is a better model than S at ctx=4096" is not, because Q0's climb
+shows ppl ordering in that regime doesn't mean what it looks like it means for
+capability. This preserves both results without either silently overriding the
+other — the raw-ppl S-vs-D1 finding above is not discounted by this section, and
+this section is not contradicted by that finding.
 
 ## S vs X: the dissociation is intact but *decaying*, not sharpened
 
@@ -315,27 +334,35 @@ attempted here.
 1. **Raw ppl and the normalized metric now tell asymmetric-confidence stories, and
    neither survives as an unconditional claim.** Raw ppl: D1 leads S at every rung
    from 1024 through 4096, gap widening monotonically, and by ctx=4096 this is
-   **seed-unanimous (3/3) and confirmed paired** (identical evaluation windows) —
-   the strongest single result in this document. Normalized metric: the pooled
-   mean also shifts to D1's favor by ctx=4096, but **no rung from 512 through 4096
-   is seed-unanimous** — every one is a 2-of-3 split, carried mainly by one seed
-   (1337) that favors D1 on this metric from ctx=512 onward. Treat the raw-ppl
-   trend as confirmed and the normalized-metric trend as suggestive only. The
-   claim that survives with full confidence is narrower than either original
-   framing: *S degrades less than D1 from its own baseline at ctx=512 through
-   ctx=2048 on the pooled mean (peaking at 27% advantage at ctx=512), but this is
-   not a seed-unanimous effect at any rung, and by ctx=4096 D1 leads on raw ppl
-   with full seed consensus.*
+   **seed-unanimous (3/3, one-tailed sign-test p=0.125 — not significant at
+   conventional thresholds, but the most seed-consistent and paired result in
+   this document) — see §2's carve-out below for how this survives the
+   interpretable-range caution rather than being discounted by it.** Normalized
+   metric: the pooled mean also shifts to D1's favor by ctx=4096, but **no rung
+   from 512 through 4096 is seed-unanimous** — every one is a 2-of-3 split,
+   carried mainly by one seed (1337) that favors D1 on this metric from ctx=512
+   onward. Treat the raw-ppl trend as the stronger of the two and the
+   normalized-metric trend as suggestive only. The claim that survives with full
+   confidence is narrower than either original framing: *S degrades less than D1
+   from its own baseline at ctx=512 through ctx=2048 on the pooled mean (peaking
+   at 27% advantage at ctx=512), but this is not a seed-unanimous effect at any
+   rung, and by ctx=4096 D1 leads on raw ppl with full seed consensus, read as a
+   paired relative-rate-of-collapse result, not a capability claim (§2).*
 2. **Ordering beyond ctx≈2048 is not reliably interpretable as extrapolation
-   quality — and this convention is itself a caution, not a seed-confirmed
-   finding.** The no-interaction floor control Q0 rises monotonically in *pooled
-   rank* with evaluation length, reaching 2nd of 6 by ctx=4096 and 1st of 4 at
-   ctx=8192 — but the individual comparisons underneath that climb are
-   themselves mean-driven, not seed-unanimous (Q0 beats S at ctx=2048 in 2/3
-   seeds; beats D1 at ctx=4096 in 2/3; beats D0p at ctx=4096 in only 1/3). Kept as
-   a standing caution regardless: claims about extrapolation quality should be
-   treated as reliable through ctx≤1024, reportable-with-caveat at ctx=2048, and
-   cost/collapse characterization only at ctx≥4096.
+   quality — but this governs cross-field ordering, not paired comparisons, and
+   the two must not be conflated.** The no-interaction floor control Q0 rises
+   monotonically in *pooled rank* with evaluation length, reaching 2nd of 6 by
+   ctx=4096 and 1st of 4 at ctx=8192 — but the individual comparisons underneath
+   that climb are themselves mean-driven, not seed-unanimous (Q0 beats S at
+   ctx=2048 in 2/3 seeds; beats D1 at ctx=4096 in 2/3; beats D0p at ctx=4096 in
+   only 1/3). **Explicit carve-out:** this caution applies to ranking the whole
+   six-variant field against each other (reliable through ctx≤1024,
+   reportable-with-caveat at ctx=2048, cost/collapse characterization only at
+   ctx≥4096) — it does **not** apply to a paired two-variant sign test on
+   identical windows (a third variant's rank moving doesn't undermine a pair's
+   own comparison). Point 1's ctx=4096 raw-ppl finding is exactly such a pair,
+   and stands *inside* the cost-only regime as a **relative-rate-of-collapse**
+   statement, explicitly not a capability statement.
 3. **The S-vs-X dissociation is intact through 4096 on both metrics but
    decaying** — not sharpened, contra this document's original wording — from
    60.3% at ctx=512 to 7.2% at ctx=4096, with one seed already crossing at 4096.
@@ -353,3 +380,23 @@ attempted here.
    same 256 windows for every variant regardless of batch configuration — the
    S-vs-D1 and S-vs-X comparisons at ctx=4096 are genuinely paired, not an
    artifact of differing batch sizes.
+6. **Carried forward for Phase 5 metric pre-registration, not acted on here:**
+   this document's own history is the argument for it. The original version
+   treated the normalized metric as the safe fallback if raw ppl failed; it
+   turned out to be the *less* seed-stable of the two, not the more robust one
+   — it crosses in the same interval as raw ppl, and unlike raw ppl it is never
+   seed-unanimous past ctx=256. Dividing by `e^val_loss` adds the variance of a
+   second estimate rather than cancelling anything. Recommendation for whoever
+   drafts Phase 5's metric pre-registration: **declare raw ppl (or raw loss) the
+   primary metric and the normalized ratio a declared secondary, before any
+   Phase 5 numbers exist** — not the reverse, and not decided implicitly by
+   which one looks safer when a result is inconvenient.
+7. **A third instance of a named propagation pattern, folded into
+   `RESULTS_phase4.md` §11** rather than re-argued here: §9 limitation 5 ("seed
+   variance in the dense family... sets a floor on readable margins for any
+   dense comparison") was already on record before this document's S-vs-D1 and
+   Q0-ranking work independently re-derived the same conclusion without citing
+   it. The re-derivation was still the right thing to do; the citation should
+   have been there too. §11 now names this as the third case and recommends a
+   standing pre-write check: grep prior documents for a claim before
+   re-deriving it cold.
